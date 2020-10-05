@@ -19,5 +19,5 @@ limitations under the License.
 
 ## License
 
-Copyright (c) 2020 Kaamiki Development Team. All rights reserved.
+Copyright (c) 2020 Kaamiki Development Team. All rights reserved.<br>
 Licensed under the [Apache](https://github.com/kaamiki/kaamiki/blob/master/LICENSE) License 2.0
