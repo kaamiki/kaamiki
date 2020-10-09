@@ -14,7 +14,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 
 Author(s):
-  kwattorama <kwattshailesh@gmail.com>
+  kwattorama <61426179+kwattorama@users.noreply.github.com>
 
 -->
 
@@ -61,7 +61,7 @@ As community members, contributors and maintainers of this project, we are thank
 
 *Do whatever you want to achieve our goal. Just mind the consequences.*
 
-### unacceptable behavior include:
+### Unacceptable behavior include:
 
 - Don't be surprised if a team member is not yet familiar with a topic, a tool, a person or a process. We believe in the spirit of a beginner and in the fact that one constantly wants to learn something new. It is absolutely okay to say "I don't know" or "I don't understand". The phrase "there are no stupid questions" is lived 100% by us.
 
