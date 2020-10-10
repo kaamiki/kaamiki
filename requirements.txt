@@ -1,0 +1,5 @@
+geopy
+psutil
+pywin32
+pywinauto
+uiautomation
