@@ -74,8 +74,6 @@ As community members, contributors and maintainers of this project, we are thank
 - Publishing others' private information, such as a physical or email address, without their explicit permission
 
 - Other conduct which could reasonably be considered inappropriate in a professional setting
-  
-- Angry responses are valid, but abusive language and vindictive actions are toxic. When something happens that offends you, handle it assertively, but be respectful. Escalate reasonably, and try to allow the offender an opportunity to explain themselves, and possibly correct the issue.
 
 *Please, also take a notice that different people understand unacceptable behavior differently.*
 
