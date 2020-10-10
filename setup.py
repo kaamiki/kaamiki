@@ -78,7 +78,6 @@ def _prepare() -> None:
   base = _os.expanduser(f"~/.{_NAME}/")
   if not _os.exists(base):
     os.mkdir(base)
-
   with open(os.path.join(base, "update"), "w") as file:
     file.write(f"name: {_NAME}\n"
                f"version: {_VERSION}\n"
