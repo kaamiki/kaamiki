@@ -38,14 +38,14 @@ As community members, contributors and maintainers of this project, we are thank
 
 - (add : AIM of kaamiki in two points)
 
-- Don't just support your colleagues on demand, be proactive. Offer your help if you notice that a team member is struggling with a problem or otherwise needs help. Be careful not to be too patronizing or disrespectful. When someone turns to you for help, always be open, listen and try to put yourself in the position of your counterpart. If you don't have time because of a deadline, let the person know and tell them openly when you have time or maybe refer a team member who is just as familiar with the topic.
-
 
 ### Expected behavior that contributes to a positive environment for our community include:
 
 - Clearly convey what you want, avoid acronyms and jargon if not everyone can understand in conversation. Be inclusive
 
 - Be inquisitive. Nobody knows everything! Asking questions early avoids many problems later, so questions are encouraged. Those who are asked should be responsive and helpful, within the context of our shared goal of improving Kaamiki.
+
+- Don't just support your colleagues on demand, be proactive. Offer your help if you notice that a team member is struggling with a problem or otherwise needs help. Be careful not to be too patronizing or disrespectful. When someone turns to you for help, always be open, listen and try to put yourself in the position of your counterpart. If you don't have time because of a deadline, let the person know and tell them openly when you have time or maybe refer a team member who is just as familiar with the topic.
 
 - Share your insights early to get feedback quickly. Don't just ask for feedback, but also give it back to the team. Your feedback should be friendly, respectful, clear, constructive, and focused on goals and values rather than personal preferences. Thank you for the feedback.
 
@@ -57,11 +57,11 @@ As community members, contributors and maintainers of this project, we are thank
 
 - Focusing on what is best not just for us as individuals, but for the overall community
   
-- Step down considerately. Members of every project come and go. When somebody leaves or disengages from the project they should tell people they are leaving and take the proper steps to ensure that others can pick up where they left off. In doing so, they should remain respectful of those who continue to participate in the project and should not misrepresent the project's goals or achievements. Likewise, community members should respect any individual's choice to leave the project.
+- Step down respectfully. Members of every team/project come and go. When somebody leaves or disengages from the project they should tell people they are leaving and take the proper steps to ensure that others can pick up where they left off. In doing so, they should remain respectful of those who continue to participate in the project and should not misrepresent the project's goals or achievements. Likewise, community members should respect any individual's choice to leave the project.
 
 *Do whatever you want to achieve our goal. Just mind the consequences.*
 
-### Unacceptable behavior include:
+### unacceptable behavior include:
 
 - Don't be surprised if a team member is not yet familiar with a topic, a tool, a person or a process. We believe in the spirit of a beginner and in the fact that one constantly wants to learn something new. It is absolutely okay to say "I don't know" or "I don't understand". The phrase "there are no stupid questions" is lived 100% by us.
 
@@ -87,15 +87,17 @@ As community members, contributors and maintainers of this project, we are thank
 
 *If the behavior is harassing or threatening, or for other reasons requires immediate actions, please see below reporting voilations section.*
 
-Conflict can happen in any forms, from someone using hurtful and harsh language to more serious cases such as threats of voilence and everything in between.
+ Conflict is a struggle that can arise during an active disagreement of opinions or interests. Many of us might fear conflict. However conflict is also a healthy, It means that people are learning to both stand up for their beliefs and compromise on some matters.
+ 
+ Conflict can happen in any forms, from someone using hurtful and harsh language to more serious cases such as threats of voilence and everything in between.
 
 Angry responses are valid, but abusive language and vindictive actions are toxic. When something happens that offends you, handle it assertively, but be respectful. Escalate reasonably, and try to allow the offender an opportunity to explain themselves, and possibly correct the issue.
 
 Address the perceived conflict directly with those involved, preferably in a real-time medium. If this fails, get a third party (e.g. a mutual friend). If you are still unable to resolve the conflict, and you believe it rises to harassment or another code of conduct violation, report it.
   
-## Reporting Voilations
+## Reporting Violations 
 
-- If you are the subject of, or witness to any violations of this Code of Conduct, please contact us by submitting an incident report [add link of google form made via kaamiki email], or email (add kaamiki email).
+- If you are the subject of, or witness to any violations of this Code of Conduct, please contact us by submitting an incident report[add link of google form made via kaamiki email], or email (add kaamiki email).
 
 - If the person who is harassing you is on the team, they will recuse themselves from handling your incident. We will respond as promptly as we can.
   
