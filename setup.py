@@ -117,8 +117,8 @@ setup(
         "Programming Language :: Python :: 3.7",
         "Programming Language :: Python :: 3.8",
         "Topic :: Home Automation",
-        "Topic:: Security",
-        "Topic:: Security:: Cryptography",
+        "Topic :: Security",
+        "Topic :: Security :: Cryptography",
         "Topic :: Scientific/Engineering :: Artificial Intelligence",
     ],
 )
