@@ -33,11 +33,11 @@ As community members, contributors and maintainers of this project, we are thank
 ## Our standards
 
 - We welcome and encourage participation by everyone and are committed to being in a community where everyone feels good about joining.
-- We sacredly believe in the concept of **[Vasudhaiv Kutumbkam](https://en.wikipedia.org/wiki/Vasudhaiva_Kutumbakam)** (The World is One Family) in letter and spirit. Although we may not be able to satisfy everyone, we will always work to treat everyone well.
-- We don't encourage support and suggestions on demand, we expect everyone to be proactive. We believe in proactive help or contribution to a problem. While doing so, please be careful not to be too patronizing or disrespectful. When someone turns to you for help, always be open, listen and try to put yourself in the position of your counterpart. If you don't have time, let the person know or maybe refer to a team member who is just as familiar with the topic.
+- We sacredly believe in the concept of **[Vasudhaiv Kutumbkam](https://www.speakingtree.in/blog/vasudhaiva-kutumbakam-meaning)** (The World is One Family) in letter and spirit. Although we may not be able to satisfy everyone, we will always work to treat everyone well.
 - Expected behavior that contributes to a positive environment for our community include:
   - Clearly convey what you want, avoid acronyms and jargon to keep the conversations simple. Be inclusive.
   - Be inquisitive. Nobody knows everything! Asking questions early in planning and development avoids confusions later, so asking questions is encouraged. Those who are asked should be responsive and helpful, within the context of our shared goal of improving Kaamiki.
+  - We don't encourage support and suggestions on demand, we expect everyone to be proactive. We believe in proactive help or contribution to a problem. While doing so, please be careful not to be too patronizing or disrespectful. When someone turns to you for help, always be open, listen and try to put yourself in the position of your counterpart. If you don't have time, let the person know or maybe refer to a team member who is just as familiar with the topic.
   - Share your insights early to get a quick feedback. Don't just ask for feedback, but share yours with the team as well. Your feedback should be respectful, clear, constructive, and focused on goals and values rather than personal preferences.
   - Demonstrating empathy and kindness toward other people. Be polite and friendly in all forms of communication. Avoid sarcasm or explicitly add a hashtag **#sarcasm** to your statement to avoid misunderstandings. If required use Emojis or GIFs to avoid miscommunication, but use them consciously and moderately.
   - Being respectful of differing opinions, viewpoints, and experiences.
@@ -63,7 +63,7 @@ Conflict can happen in any form or from someone using hurtful and harsh language
   
 ## Reporting Violations
 
-- If you are the subject of, or witness to any violations of this Code of Conduct, please email us at <xames3.kaamiki@gmail.com> with an incident report (if possible).
+- If you are the subject of, or witness to any violations of this Code of Conduct, please email us at <xames3.kaamiki@gmail.com> or create an [incident report](https://forms.gle/NRTkqQiquet821QTA).
 - If the person who is harassing you is on the team, they will recuse themselves from handling your incident. We will respond as promptly as we can.
 - We will respect confidentiality requests for the purpose of protecting victims of abuse. We will not name harassment victims without their affirmative consent.
 - In order to provide learning & growth oriented space with protection of individual and Kaamiki community from abuse and burnout, we reserve the right to reject any report we believe to have been made in bad faith. Reports intended to silence legitimate criticism may be deleted without response.
