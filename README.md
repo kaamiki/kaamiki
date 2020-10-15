@@ -13,7 +13,10 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 
+Author(s):
+    xames3 <44119552+xames3@users.noreply.github.com>
 -->
+
 <!-- markdownlint-disable MD033 MD041 -->
 ![Kaamiki](https://github.com/kaamiki/kaamiki/blob/assets/elements/img/kaamiki-banner.png?raw=true "Kaamiki")
 
