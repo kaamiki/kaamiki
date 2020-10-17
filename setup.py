@@ -22,7 +22,7 @@ Kaamiki
 Kaamiki is a simple machine learning framework for obvious tasks.
 """
 # TODO(xames3): Add a descriptive docstring which would help the
-# users and developers alike to get an idea what and how kaamiki
+# users and developers alike to get an idea what and how Kaamiki
 # could assist them right out of the box with minimal efforts.
 
 import os
@@ -30,15 +30,15 @@ import os.path as _os
 import sys
 
 # Raise exceptions if the host system is not properly configured
-# for installing kaamiki. See https://github.com/kaamiki/kaamiki
+# for installing Kaamiki. See https://github.com/kaamiki/kaamiki
 # for more help.
 if sys.version_info < (3, ):
-  sys.exit("Python 2 has officially reached end-of-life and is no longer "
-           "supported by Kaamiki.")
+  sys.exit("Python 2 has officially reached end-of-life "
+           "and is no longer supported by Kaamiki.")
 
-if sys.version_info < (3, 6):
-  sys.exit("Kaamiki supports minimum python 3.6 and above. Kindly upgrade "
-           "your python interpreter to a suitable version.")
+if sys.version_info < (3, 6, 9):
+  sys.exit("Kaamiki supports minimum python 3.6.9 and above. Kindly "
+           "upgrade your python interpreter to a suitable version.")
 
 if os.name == "nt" and sys.maxsize.bit_length() == 31:
   sys.exit("32-bit Python runtime is not supported. Please switch to "
@@ -53,20 +53,22 @@ _NAME = "kaamiki"
 # See https://semver.org/spec/v2.0.0.html for more help.
 _VERSION = "0.0.1"
 
-# Flag which raises warning if the installed version of kaamiki
+# Flag which raises warning if the installed version of Kaamiki
 # is either outdated or a nightly (development) build.
 _STATUS_FLAG = 0
 
 _DESCRIPTION = __doc__.splitlines()[3]
 
 with open("requirements.txt", "r") as requirements:
-  if os.name != "nt":
+  if os.name == "nt":
+    packages = [idx for idx in requirements]
+  else:
     skip = ["pywin32", "pypywin32", "pywinauto"]
     packages = [idx for idx in requirements if idx.rstrip() not in skip]
 
 
 def _parse_readme() -> str:
-  """Parse README.md for long description of kaamiki."""
+  """Parse README.md for long description of Kaamiki."""
   with open("README.md", "r") as file:
     return file.read()
 
@@ -74,7 +76,7 @@ def _parse_readme() -> str:
 def _prepare() -> None:
   """Prepare the required directory structure while setting up."""
   # Create base directory for caching, logging and storing data for/of
-  # a kaamiki session.
+  # a Kaamiki session.
   base = _os.expanduser(f"~/.{_NAME}/")
   if not _os.exists(base):
     os.mkdir(base)
