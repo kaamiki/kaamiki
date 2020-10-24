@@ -23,14 +23,24 @@ A Python implementation of Kaamiki.
 """
 
 import getpass
-import threading
+import re
+import string
+from threading import Lock
+from types import TracebackType
+from typing import Tuple
 
-USER = getpass.getuser().replace(" ", "-").lower()
+SysExcInfoType = Tuple[type, BaseException, TracebackType]
+
+
+def replace_chars(text: str, sub: str = "_") -> str:
+  """Replace special characters with substitution string."""
+  # See https://stackoverflow.com/a/23996414/14316408 for more help.
+  return re.sub(r"[" + re.escape(string.punctuation) + "]", sub, text).lower()
 
 
 class Neo(type):
   """
-  A thread-safe implementation of Singleton design pattern.
+  An implementation of thread-safe Singleton design pattern.
 
   Singleton is a creational design pattern, which ensures that
   only a single object of its kind exist and provides a single
@@ -56,11 +66,14 @@ class Neo(type):
   # For better understanding of the below implementation, read this:
   # https://refactoring.guru/design-patterns/singleton/python/example
   _instances = {}
-  _lock = threading.Lock()
+  _lock = Lock()
 
   def __call__(cls, *args, **kwargs):
-    """Callable instance of a class."""
+    """Callable instance of neo class."""
     with cls._lock:
       if cls not in cls._instances:
         cls._instances[cls] = super().__call__(*args, **kwargs)
     return cls._instances[cls]
+
+
+USER = replace_chars(getpass.getuser())
