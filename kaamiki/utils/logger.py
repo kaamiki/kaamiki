@@ -75,16 +75,16 @@ class _Formatter(logging.Formatter, metaclass=Neo):
   are inspired from the `Spring Boot` framework.
   """
 
-  def __init__(self, datefmt: str = None, fmt: str = None) -> None:
+  def __init__(self, date_fmt: str = None, fmt: str = None) -> None:
     """
     Initialize formatter.
 
     Initialize the formatter either with the specified format
     strings, or use default Kaamiki format as said above.
     """
-    if not datefmt:
-      datefmt = "%b %d, %Y %H:%M:%S"
-    self.datefmt = datefmt
+    if not date_fmt:
+      date_fmt = "%b %d, %Y %H:%M:%S"
+    self.date_fmt = date_fmt
     self.user_fmt = True
     if not fmt:
       self.user_fmt = False
@@ -105,7 +105,7 @@ class _Formatter(logging.Formatter, metaclass=Neo):
   def format(self, record: logging.LogRecord) -> str:
     """Format and return the specified record as text."""
     if self.user_fmt:
-      log = logging.Formatter(self.fmt, self.datefmt)
+      log = logging.Formatter(self.fmt, self.date_fmt)
     else:
       thd = "main" if record.threadName == "MainThread" else record.threadName
       # Shorten longer module names with an ellipsis while logging.
@@ -113,7 +113,7 @@ class _Formatter(logging.Formatter, metaclass=Neo):
       module = self.relative_path(record.pathname)
       if len(module) > 30:
         module = module[:27] + bool(module[27:]) * "..."
-      log = logging.Formatter(self.fmt.format(thd, module), self.datefmt)
+      log = logging.Formatter(self.fmt.format(thd, module), self.date_fmt)
     log = log.format(record)
     if record.exc_text:
       func = record.funcName
@@ -171,7 +171,7 @@ class Logger(object):
   used. For the log format, Logger prefers the default one as it seems
   to provide all the bells and whistles right off the bat.
   However, as described above the behaviour can be changed using the
-  argument(s). In this case, `datefmt` and `fmt`.
+  argument(s). In this case, `date_fmt` and `fmt`.
 
   Like any standard logger, Logger allows you to set your minimum
   logging level using `level` argument. By default, the path and
@@ -194,10 +194,10 @@ class Logger(object):
   certain time frame by updating the `rotate_by` argument.
 
   When `rotate_by` is set to "size", `Rollover` occurs whenever the
-  current log file is nearly `maxBytes` in length. If `maxBytes` is
-  zero, rollover never occurs. If backupCount is >= 1, the system will
+  current log file is nearly `max_bytes` in length. If `max_bytes` is
+  zero, rollover never occurs. If backup_count is >= 1, the system will
   successively create new files with extensions ".1", ".2" etc.
-  appended to it. For example, with a backupCount of 5 and a base file
+  appended to it. For example, with a backup_count of 5 and a base file
   name of "kaamiki.log", you would get "kaamiki.log", "kaamiki.log.1",
   "kaamiki.log.2", ... through to "kaamiki.log.5". The file being
   written to is always "kaamiki.log" - when it gets filled up, it is
@@ -206,8 +206,8 @@ class Logger(object):
   "kaamiki.log.3" etc. respectively.
 
   When `rotate_by` is set to "time" log rotation occurs at certain time
-  intervals. If backupCount is > 0, when rollover is done, no more than
-  backupCount files are kept - the oldest ones are deleted.
+  intervals. If backup_count is > 0, when rollover is done, no more than
+  backup_count files are kept - the oldest ones are deleted.
 
   Example:
     >>> from kaamiki.utils.logging import Logger
@@ -218,7 +218,7 @@ class Logger(object):
 
   def __init__(self,
                fmt: str = None,
-               datefmt: str = None,
+               date_fmt: str = None,
                level: Union[int, str] = None,
                name: str = None,
                path: str = None,
@@ -227,12 +227,12 @@ class Logger(object):
                extra: dict = {},
                rotate: bool = True,
                rotate_by: str = "size",
-               maxBytes: int = 1000000, # Rotate when logs reach 1 MB
+               max_bytes: int = 1000000, # Rotate when logs reach 1 MB
                when: str = "h",
                interval: int = 1,
                utc: bool = False,
-               atTime: datetime.datetime = None,
-               backupCount: int = 5,
+               at_time: datetime.datetime = None,
+               backup_count: int = 5,
                encoding: str = None,
                delay: bool = False) -> None:
     """
@@ -243,22 +243,22 @@ class Logger(object):
     with Kaamiki, although the behaviour can be easily overridden.
     """
     self.fmt = fmt
-    self.datefmt = datefmt
+    self.date_fmt = date_fmt
     self.level = logging.getLevelName(level if level else logging.DEBUG)
     self.root = root
     self.colored = colored
     self.extra = extra
-    self.formatter = _Formatter(self.datefmt, self.fmt)
+    self.formatter = _Formatter(self.date_fmt, self.fmt)
     self.stream = _StreamHandler() if self.colored else logging.StreamHandler()
     self.stream.setFormatter(self.formatter)
     self.rotate = rotate
     self.rotate_by = rotate_by
-    self.maxBytes = maxBytes
+    self.max_bytes = max_bytes
     self.when = when
     self.interval = interval
     self.utc = utc
-    self.atTime = atTime
-    self.backupCount = backupCount
+    self.at_time = at_time
+    self.backup_count = backup_count
     self.encoding = encoding
     self.delay = delay
     try:
@@ -273,14 +273,14 @@ class Logger(object):
     if self.rotate:
       if self.rotate_by == "time":
         self.file = TimedRotatingFileHandler(
-            self._file, self.when, self.interval, self.backupCount,
-            self.encoding, self.delay, self.utc, self.atTime)
+            self._file, self.when, self.interval, self.backup_count,
+            self.encoding, self.delay, self.utc, self.at_time)
       else:
         # If rotation or rollover is wanted, it makes no sense to use
         # another mode than `a`. Hence, the `mode` argument is not
         # configurable.
         self.file = RotatingFileHandler(
-            self._file, "a", self.maxBytes, self.backupCount, self.encoding,
+            self._file, "a", self.max_bytes, self.backup_count, self.encoding,
             self.delay)
     else:
       self.file = logging.FileHandler(
