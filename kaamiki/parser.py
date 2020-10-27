@@ -21,7 +21,8 @@ Kaamiki CLI Parser
 
 A command line parsing utility for Kaamiki. The module provides a
 high-level argument parser that can handle both argument (optional and
-positional) and provides helpful usage descriptions.
+positional) and provides helpful usage descriptions thereby exposing
+the main parser.
 """
 
 import argparse
@@ -30,6 +31,11 @@ import os
 import sys
 from textwrap import TextWrapper as _wrapper
 from typing import Any, List, Tuple
+
+__all__ = ["main"]
+
+COPYRIGHT = "Copyright (c) 2020 Kaamiki Development Team. All rights reserved."
+URL = "Read complete documentation at: https://github.com/kaamiki/kaamiki"
 
 
 class Parser(argparse.ArgumentParser):
@@ -52,6 +58,9 @@ class Parser(argparse.ArgumentParser):
   needed to parse the argument(s) to the callable instance from the
   command line.
 
+  It enables the usage of keyword, `kaamiki` to call instances of
+  Kaamiki's methods.
+
   NOTE: The scope of this class is not to defy the behaviour of the
   builtin `ArgumentParser` but to embrace it and work as a simple
   wrapper around its feature rich implementation.
@@ -68,8 +77,9 @@ class Parser(argparse.ArgumentParser):
     self.program = {key: kwargs[key] for key in kwargs}
     self.commands = []
     self.options = []
-    # Make `add_help=False` to provide custom help message.
-    super().__init__(add_help=False, *args, **kwargs)
+    # Define program keyword, `prog` as `kaamiki` and make
+    # `add_help=False` to add support for custom help message.
+    super().__init__(prog="kaamiki", add_help=False, *args, **kwargs)
 
   def add_argument(self, *args: Any, **kwargs: Any) -> None:
     """
@@ -258,7 +268,7 @@ class Parser(argparse.ArgumentParser):
             str.isspace(self.program["epilog"]):
       epilog.append("\n")
       epilog.extend(epilog_wrapper.wrap(self.program["epilog"]))
-      epilog.append("\n")
+      epilog.append(f"\n{URL}\n\n{COPYRIGHT}\n")
 
     return description, commands, options, epilog
 
@@ -273,3 +283,33 @@ class Parser(argparse.ArgumentParser):
     sys.stderr.write(f"\n{self.format_usage()}\n")
     sys.stderr.write("".join(list(itertools.chain(*self.format_help()))))
     sys.exit(1)
+
+
+USAGE = "kaamiki <command> [options] ..."
+EPILOG = ("For specific information about a particular command, run "
+          "'kaamiki <command> -h'.")
+
+
+def main() -> None:
+  """
+  Main Kaamiki entry point.
+
+  The function is powered by `Parser` object which acts like an entry
+  point for Kaamiki when used on command line. It enables the method
+  or function calls from Kaamiki suite using simple commands.
+  """
+  parser = Parser(usage=USAGE, epilog=EPILOG, conflict_handler="resolve")
+  parser.add_argument("-h", "--help",
+                      help="Show help.",
+                      action="store_true",
+                      default=argparse.SUPPRESS)
+  parser.add_argument("-V", "--version",
+                      help="Show installed Kaamiki version and exit.",
+                      action="store_true",
+                      default=argparse.SUPPRESS)
+  cmd_args = parser.parse_args()
+  if hasattr(cmd_args, "function"):
+    cmd_args.function(cmd_args)
+  else:
+    parser.print_help()
+    sys.exit(0)
