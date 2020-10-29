@@ -34,8 +34,16 @@ from typing import Any, List, Tuple
 
 __all__ = ["main"]
 
-COPYRIGHT = "Copyright (c) 2020 Kaamiki Development Team. All rights reserved."
+# NOTE: Do not import and use main() directly. Using it directly is
+# highly discouraged. The behavior of this function is subject to
+# change with time and modifications happening in the existing
+# implementation, so calling it directly is probably not a good idea.
+
 URL = "Read complete documentation at: https://github.com/kaamiki/kaamiki"
+COPYRIGHT = "Copyright (c) 2020 Kaamiki Development Team. All rights reserved."
+USAGE = "kaamiki <command> [options] ..."
+EPILOG = ("For specific information about a particular command, run "
+          "'kaamiki <command> -h'.")
 
 
 class Parser(argparse.ArgumentParser):
@@ -285,27 +293,19 @@ class Parser(argparse.ArgumentParser):
     sys.exit(1)
 
 
-USAGE = "kaamiki <command> [options] ..."
-EPILOG = ("For specific information about a particular command, run "
-          "'kaamiki <command> -h'.")
-
-
 def main() -> None:
   """
-  Main Kaamiki entry point.
+  Primary Kaamiki entry point.
 
   The function is powered by `Parser` object which acts like an entry
   point for Kaamiki when used on command line. It enables the method
   or function calls from Kaamiki suite using simple commands.
   """
   parser = Parser(usage=USAGE, epilog=EPILOG, conflict_handler="resolve")
-  parser.add_argument("-h", "--help",
-                      help="Show help.",
-                      action="store_true",
+  parser.add_argument("-h", "--help", help="Show help.", action="store_true",
                       default=argparse.SUPPRESS)
-  parser.add_argument("-V", "--version",
+  parser.add_argument("-V", "--version", action="store_true",
                       help="Show installed Kaamiki version and exit.",
-                      action="store_true",
                       default=argparse.SUPPRESS)
   cmd_args = parser.parse_args()
   if hasattr(cmd_args, "function"):
