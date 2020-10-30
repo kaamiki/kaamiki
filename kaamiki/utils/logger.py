@@ -27,7 +27,6 @@ import logging
 import os
 import os.path as _os
 import sys
-from colored import fg, attr
 from distutils.sysconfig import get_python_lib
 from logging.handlers import RotatingFileHandler, TimedRotatingFileHandler
 from pathlib import Path
@@ -49,30 +48,14 @@ GRN = "\033[92m"
 YLW = "\033[93m"
 CYN = "\033[96m"
 
-DEF_WIN = attr(0)
-BLD_WIN = attr(1)
-RED_WIN = fg(196)
-GRN_WIN = fg(2)
-YLW_WIN = fg(3) 
-CYN_WIN = fg(43)
-
-if os.name == "nt":
-  _colors = {
-    logging.DEBUG: CYN_WIN,
-    logging.INFO: GRN_WIN,
-    logging.WARNING: YLW_WIN,
-    logging.ERROR: RED_WIN,
-    logging.CRITICAL: BLD_WIN + RED_WIN,
+_colors = {
+    logging.DEBUG: CYN,
+    logging.INFO: GRN,
+    logging.WARNING: YLW,
+    logging.ERROR: RED,
+    logging.CRITICAL: BLD + RED,
 }
 
-else:
-  _colors = {
-      logging.DEBUG: CYN,
-      logging.INFO: GRN,
-      logging.WARNING: YLW,
-      logging.ERROR: RED,
-      logging.CRITICAL: BLD + RED,
-  }
 
 class _Formatter(logging.Formatter, metaclass=Neo):
   """
@@ -157,8 +140,7 @@ class _StreamHandler(logging.StreamHandler, metaclass=Neo):
   or sys.stderr may be used.
   """
   # TODO(xames3): Consider adding support to Windows systems.
-  # See https://gist.github.com/mooware/a1ed40987b6cc9ab9c65 or
-  # https://github.com/SebiSebi/friendlylog/blob/master/friendlylog/colored_logger.py
+  # See https://gist.github.com/mooware/a1ed40987b6cc9ab9c65
   # for implementation for a Windows machine.
 
   def __init__(self) -> None:

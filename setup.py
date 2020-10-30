@@ -104,6 +104,11 @@ setup(
     include_package_data=True,
     packages=find_packages(),
     platform=["Linux", "Windows", "macOS"],
+    entry_points={
+        "console_scripts": [
+            "kaamiki = kaamiki.parser:main",
+        ],
+    },
     # You can find the complete list here:
     # https://pypi.python.org/pypi?%3Aaction=list_classifiers
     classifiers=[
