@@ -139,6 +139,7 @@ class _StreamHandler(logging.StreamHandler, metaclass=Neo):
   Note that this class does not close the stream, as sys.stdout
   or sys.stderr may be used.
   """
+  
   # TODO(PranaliRPatil): Consider adding support to Windows systems.
   # See https://gist.github.com/mooware/a1ed40987b6cc9ab9c65
   # for implementation for a Windows machine.
