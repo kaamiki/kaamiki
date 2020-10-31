@@ -53,6 +53,8 @@ class Neo(type):
   implementing singletons in code.
 
   Example:
+    >>> from kaamiki import Neo
+    >>>
     >>> class YourClass(metaclass=Neo):
     ...     pass
     ...

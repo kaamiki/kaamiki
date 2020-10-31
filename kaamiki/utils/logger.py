@@ -139,7 +139,7 @@ class _StreamHandler(logging.StreamHandler, metaclass=Neo):
   Note that this class does not close the stream, as sys.stdout
   or sys.stderr may be used.
   """
-  # TODO(xames3): Consider adding support to Windows systems.
+  # TODO(PranaliRPatil): Consider adding support to Windows systems.
   # See https://gist.github.com/mooware/a1ed40987b6cc9ab9c65
   # for implementation for a Windows machine.
 
@@ -210,10 +210,10 @@ class Logger(object):
   backup_count files are kept - the oldest ones are deleted.
 
   Example:
-    >>> from kaamiki.utils.logging import Logger
-    >>> log = Logger().log
+    >>> from kaamiki.utils.logger import Logger
+    >>> logger = Logger().log
     >>>
-    >>> log.info("This is how you use the Logger class with defaults.")
+    >>> logger.info("This is how you use the Logger class with defaults.")
   """
 
   def __init__(self,
@@ -227,7 +227,7 @@ class Logger(object):
                extra: dict = {},
                rotate: bool = True,
                rotate_by: str = "size",
-               max_bytes: int = 1000000, # Rotate when logs reach 1 MB
+               max_bytes: int = 1000000,  # Rotate when logs reach 1 MB
                when: str = "h",
                interval: int = 1,
                utc: bool = False,
