@@ -15,6 +15,7 @@
 #
 # Author(s):
 #     xames3 <44119552+xames3@users.noreply.github.com>
+#     PranaliRPatil <43814215+PranaliRPatil@users.noreply.github.com>
 
 """
 Kaamiki Logger
@@ -32,28 +33,33 @@ from logging.handlers import RotatingFileHandler, TimedRotatingFileHandler
 from pathlib import Path
 from typing import Union
 
-from kaamiki import USER, Neo, SysExcInfoType, replace_chars
+from kaamiki import (SESSION_USER, SYS_EXC_INFO_TYPE, Neo, __name__,
+                     replace_chars)
 
 __all__ = ["Logger"]
 
-# NOTE: Most of the docstring content is referenced from the original
-# logging module as we're not changing the behaviour of any of its
-# implementation but rather implementing some level of scalability
-# and simplicity suitable for most of the development scenarios.
+# NOTE: Most of the doc string content is referenced from the original
+# logging module as we are not changing the behaviour of any of its
+# implementation but rather adding some level of scalability, simplicity
+# and flexibility that is required in most of the development scenarios.
 
-DEF = "\033[0m"
-BLD = "\033[1m"
-RED = "\033[91m"
-GRN = "\033[92m"
-YLW = "\033[93m"
-CYN = "\033[96m"
+RESET = "\u001b[39m"
+GRAY = "\u001b[38;5;8m"
+RED = "\u001b[38;5;196m"
+GREEN = "\u001b[38;5;46m"
+YELLOW = "\u001b[38;5;11m"
+BLUE = "\u001b[38;5;39m"
+CYAN = "\u001b[38;5;14m"
+ORANGE = "\u001b[38;5;208m"
+
+DEFAULT_LOG_PATH = _os.expanduser(f"~/.{__name__}/{SESSION_USER}/logs/")
 
 _colors = {
-    logging.DEBUG: CYN,
-    logging.INFO: GRN,
-    logging.WARNING: YLW,
-    logging.ERROR: RED,
-    logging.CRITICAL: BLD + RED,
+    logging.DEBUG: BLUE,
+    logging.INFO: GREEN,
+    logging.WARNING: YELLOW,
+    logging.ERROR: ORANGE,
+    logging.CRITICAL: RED,
 }
 
 
@@ -61,14 +67,14 @@ class _Formatter(logging.Formatter, metaclass=Neo):
   """
   Format logs gracefully.
 
-  Formatter need to know how a LogRecord is constructed. They are
-  responsible for converting a LogRecord to a string which can be
+  Formatter need to know how a `LogRecord` is constructed. They are
+  responsible for converting a `LogRecord` to a string which can be
   interpreted. This class allows uniform formatting across various
   logging levels using the formatting string provided to it.
   If none is supplied, default template will be used.
 
-  The Formatter can be initialized with a format which makes use
-  of knowledge of the LogRecord attributes.
+  The _Formatter can be initialized with a format which makes use
+  of knowledge of the `LogRecord` attributes.
 
   This class is provided as an extension for logging records and
   traceback information in a graceful manner and the output logs
@@ -93,13 +99,13 @@ class _Formatter(logging.Formatter, metaclass=Neo):
     self.fmt = fmt
     self.exc_fmt = "{0}: {1} {2}on line {3}"
 
-  def formatException(self, ei: SysExcInfoType) -> str:
+  def formatException(self, ei: SYS_EXC_INFO_TYPE) -> str:
     """Format and return the specified exception info as a string."""
     return repr(super().formatException(ei))
 
   def relative_path(self, abspath: str) -> str:
     """Return relative path of the logged module."""
-    sep = "kaamiki" if "kaamiki" in abspath else get_python_lib()
+    sep = __name__ if __name__ in abspath else get_python_lib()
     return Path(abspath.partition(sep)[-1][1:].replace(os.sep, ".")).stem
 
   def format(self, record: logging.LogRecord) -> str:
@@ -129,32 +135,34 @@ class _Formatter(logging.Formatter, metaclass=Neo):
 
 class _StreamHandler(logging.StreamHandler, metaclass=Neo):
   """
-  StreamHandler class which add colors to the logging levels.
+  Add colors to the logging levels.
 
-  StreamHandler is a handler class which writes log record to the
-  output stream. The class is similar to native StreamHandler but
-  with some adaptive colors and taste of Singleton design pattern.
+  _StreamHandler is a handler class which writes log record to the
+  output stream. The class is similar to native StreamHandler but with
+  some adaptive colors and taste of Singleton design pattern across
+  major platforms.
 
-  The colors adapt themselves with respect to the logging levels.
-  Note that this class does not close the stream, as sys.stdout
-  or sys.stderr may be used.
+  The colors adapt themselves with respect to the logging levels. Note
+  that this class does not close the stream, as sys.stdout or sys.stderr
+  may be used.
   """
-  # TODO(PranaliRPatil): Consider adding support to Windows systems.
-  # See https://gist.github.com/mooware/a1ed40987b6cc9ab9c65
-  # for implementation for a Windows machine.
 
   def __init__(self) -> None:
     """Initialize stream handler."""
+    # See https://stackoverflow.com/a/64222858/14316408 for rendering
+    # colors on a Windows terminal with EASE!
+    if os.name == "nt":
+      os.system("color")
     super().__init__(sys.stdout)
 
   def render(self, level: int, record: logging.LogRecord) -> str:
     """Return color to render while displaying logs."""
-    return _colors.get(level, DEF) + record.levelname
+    return _colors.get(level, RESET) + record.levelname
 
   def format(self, record: logging.LogRecord) -> str:
     """Format log level with adaptive color."""
     log = logging.StreamHandler.format(self, record)
-    colored = self.render(record.levelno, record) + DEF
+    colored = self.render(record.levelno, record) + RESET
     return log.replace(record.levelname, colored)
 
 
@@ -183,7 +191,7 @@ class Logger(object):
   argument. 
 
   As stated above, Logger supports three primary file handlers - normal
-  FileHandler, RotatingFileHandler and TimedRotatingFileHandler.
+  `FileHandler`, `RotatingFileHandler` and `TimedRotatingFileHandler`.
   Handlers are tools which allows logging to a set of files, which
   switches from one file to the next either when the current file
   reaches a certain size or reaches certain timed intervals, this is
@@ -213,7 +221,7 @@ class Logger(object):
     >>> from kaamiki.utils.logger import Logger
     >>> logger = Logger().log
     >>>
-    >>> logger.info("This is how you use the Logger class with defaults.")
+    >>> logger.info("This is how you use the Logger class")
   """
 
   def __init__(self,
@@ -238,9 +246,9 @@ class Logger(object):
     """
     Initialize logger.
 
-    Initialize the logger either with non-default values or with
-    default settings. Default args are configured to work directly
-    with Kaamiki, although the behaviour can be easily overridden.
+    Initialize the logger either with default or non-default settings.
+    Default args are configured to work directly with Kaamiki, although
+    the behaviour can be easily overridden.
     """
     self.fmt = fmt
     self.date_fmt = date_fmt
@@ -266,7 +274,7 @@ class Logger(object):
     except AttributeError:
       self.py = "terminal.py"
     self.name = replace_chars(name if name else Path(self.py).stem)
-    self.path = path if path else _os.expanduser(f"~/.kaamiki/{USER}/logs/")
+    self.path = path if path else DEFAULT_LOG_PATH
     if not _os.exists(self.path):
       os.makedirs(self.path)
     self._file = _os.join(self.path, "".join([self.name, ".log"]))
