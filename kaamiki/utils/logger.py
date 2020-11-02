@@ -31,10 +31,10 @@ import sys
 from distutils.sysconfig import get_python_lib
 from logging.handlers import RotatingFileHandler, TimedRotatingFileHandler
 from pathlib import Path
-from typing import Union
+from types import TracebackType
+from typing import Tuple, Union
 
-from kaamiki import (SESSION_USER, SYS_EXC_INFO_TYPE, Neo, __name__,
-                     replace_chars)
+from kaamiki import SESSION_USER, Neo, __name__, replace_chars
 
 __all__ = ["Logger"]
 
@@ -52,6 +52,7 @@ BLUE = "\u001b[38;5;39m"
 CYAN = "\u001b[38;5;14m"
 ORANGE = "\u001b[38;5;208m"
 
+SYS_EXC_INFO_TYPE = Tuple[type, BaseException, TracebackType]
 DEFAULT_LOG_PATH = _os.expanduser(f"~/.{__name__}/{SESSION_USER}/logs/")
 
 _colors = {
