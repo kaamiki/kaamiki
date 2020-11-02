@@ -19,17 +19,35 @@
 """
 Kaamiki
 
-A Python implementation of Kaamiki.
+A Python based implementation of Kaamiki.
+
+Kaamiki is a simple machine learning framework for obvious tasks. It is
+an operating system agnostic AI* developing package which aims at
+providing high-level and flexible python abstractions for running simple
+machine learning codes with great ease. Kaamiki also offers a couple of
+simple python based nifty tools (logger, file handlers, etc.) which
+could rather provide an extension to the developers existing work.
 """
 
 import getpass
+import json
 import re
 import string
+import urllib.error
+import urllib.request
+from distutils.version import StrictVersion
 from threading import Lock
 from types import TracebackType
 from typing import Tuple
 
-SysExcInfoType = Tuple[type, BaseException, TracebackType]
+from pkg_resources import parse_version
+
+__name__ = "kaamiki"
+__version__ = "0.0.1"
+__author__ = "Kaamiki Development Team"
+
+SYS_EXC_INFO_TYPE = Tuple[type, BaseException, TracebackType]
+PYPI_URL = f"https://pypi.org/pypi/{__name__}/json"
 
 
 def replace_chars(text: str, sub: str = "_") -> str:
@@ -38,16 +56,18 @@ def replace_chars(text: str, sub: str = "_") -> str:
   return re.sub(r"[" + re.escape(string.punctuation) + "]", sub, text).lower()
 
 
+SESSION_USER = replace_chars(getpass.getuser())
+
+
 class Neo(type):
   """
   An implementation of thread-safe Singleton design pattern.
 
-  Singleton is a creational design pattern, which ensures that
-  only a single object of its kind exist and provides a single
-  point of access to it for any other code.
-  The below is a thread-safe implementation of the Singleton
-  design pattern. You can instantiate a class multiple times
-  and yet you would get reference to the same object.
+  Singleton is a creational design pattern, which ensures that only a
+  single object of its kind exist and provides a single point of access
+  to it for any other code. The below is a thread-safe implementation of
+  the Singleton design pattern. You can instantiate a class multiple
+  times and yet you would get reference to the same object.
 
   See https://stackoverflow.com/q/6760685 for more methods of
   implementing singletons in code.
@@ -58,12 +78,12 @@ class Neo(type):
     >>> class YourClass(metaclass=Neo):
     ...     pass
     ...
-    >>> singleton_obj1 = YourClass()
-    >>> singleton_obj2 = YourClass()
+    >>> singleton_obj1 = DummyClass()
+    >>> singleton_obj2 = DummyClass()
     >>> singleton_obj1
-    <__main__.YourClass object at 0x7fc8f1948970>
+    <__main__.DummyClass object at 0x7fc8f1948970>
     >>> singleton_obj2
-    <__main__.YourClass object at 0x7fc8f1948970>
+    <__main__.DummyClass object at 0x7fc8f1948970>
   """
   # For better understanding of the below implementation, read this:
   # https://refactoring.guru/design-patterns/singleton/python/example
@@ -71,11 +91,49 @@ class Neo(type):
   _lock = Lock()
 
   def __call__(cls, *args, **kwargs):
-    """Callable instance of neo class."""
+    """Callable instance of Neo."""
     with cls._lock:
       if cls not in cls._instances:
         cls._instances[cls] = super().__call__(*args, **kwargs)
     return cls._instances[cls]
 
 
-USER = replace_chars(getpass.getuser())
+def latest_version() -> str:
+  """Check for the latest stable version of Kaamiki on PyPI."""
+  try:
+    data = json.load(urllib.request.urlopen(PYPI_URL))["releases"].keys()
+    version = sorted(data, key=StrictVersion, reverse=True)[0]
+    return version if version else __version__
+  except urllib.error.URLError:
+    # Explicitly return a custom error string in case the network is not
+    # available while checking the state on PyPI.
+    return "NetworkConnectionError"
+
+
+def show_version() -> None:
+  """
+  Show version status of Kaamiki.
+
+  Show the installed version status of Kaamiki with respect to the
+  available builds. This function not only displays the installed build
+  but displays the upgrade or downgrade recommendations when checked.
+  """
+  latest = latest_version()
+  pkg = __name__.capitalize()
+
+  if latest != "NetworkConnectionError":
+    if parse_version(__version__) < parse_version(latest):
+      print(f"You are using an older version of {pkg}, v{__version__}\n"
+            f"However, v{latest} is currently available for download. You "
+            f"should consider upgrading to it using \"pip install --upgrade "
+            f"{__name__}\" command.")
+    elif parse_version(__version__) > parse_version(latest):
+      print(f"You are using a development version of {pkg}, v{__version__}\n"
+            f"If you want to roll back to a stable version, consider "
+            f"downgrading using \"pip install {__name__}\" command.")
+    else:
+      print(f"You are using the latest stable version of {pkg}, v{latest}")
+  else:
+    print(f"WARNING: Internet connection is questionable at the moment. "
+          f"Couldn't check for the latest stable version of {pkg}.\nInstalled "
+          f"version is v{__version__}")

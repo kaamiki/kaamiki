@@ -32,6 +32,8 @@ import sys
 from textwrap import TextWrapper as _wrapper
 from typing import Any, List, Tuple
 
+from kaamiki import __author__, __name__, show_version
+
 __all__ = ["main"]
 
 # NOTE: Do not import and use main() directly. Using it directly is
@@ -39,11 +41,11 @@ __all__ = ["main"]
 # change with time and modifications happening in the existing
 # implementation, so calling it directly is probably not a good idea.
 
+COPYRIGHT = f"Copyright (c) 2020 {__author__}. All rights reserved."
+EPILOG = (f"For specific information about a particular command, run "
+          f"\"{__name__} <command> -h\".")
 URL = "Read complete documentation at: https://github.com/kaamiki/kaamiki"
-COPYRIGHT = "Copyright (c) 2020 Kaamiki Development Team. All rights reserved."
-USAGE = "kaamiki <command> [options] ..."
-EPILOG = ("For specific information about a particular command, run "
-          "'kaamiki <command> -h'.")
+USAGE = f"{__name__} <command> [options] ..."
 
 
 class Parser(argparse.ArgumentParser):
@@ -66,7 +68,7 @@ class Parser(argparse.ArgumentParser):
   needed to parse the argument(s) to the callable instance from the
   command line.
 
-  It enables the usage of keyword, `kaamiki` to call instances of
+  It enables the usage of keyword, "kaamiki" to call instances of
   Kaamiki's methods.
 
   NOTE: The scope of this class is not to defy the behaviour of the
@@ -121,7 +123,7 @@ class Parser(argparse.ArgumentParser):
     This method defines the usage block and provides information along
     with the syntax of using a particular command.
 
-    NOTE: Not every command has usage information.
+    NOTE: Not every command has `usage` information.
     """
     prefix = "Usage:\n  "
     usage = []
@@ -302,14 +304,17 @@ def main() -> None:
   or function calls from Kaamiki suite using simple commands.
   """
   parser = Parser(usage=USAGE, epilog=EPILOG, conflict_handler="resolve")
-  parser.add_argument("-h", "--help", help="Show help.", action="store_true",
+  parser.add_argument("-h", "--help", action="store_true",
+                      help="Show this help message.",
                       default=argparse.SUPPRESS)
   parser.add_argument("-V", "--version", action="store_true",
-                      help="Show installed Kaamiki version and exit.",
+                      help="Show installed Kaamiki version.",
                       default=argparse.SUPPRESS)
   cmd_args = parser.parse_args()
+
   if hasattr(cmd_args, "function"):
     cmd_args.function(cmd_args)
+  elif hasattr(cmd_args, "version"):
+    show_version()
   else:
     parser.print_help()
-    sys.exit(0)
