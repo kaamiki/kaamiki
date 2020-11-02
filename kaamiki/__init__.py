@@ -75,7 +75,7 @@ class Neo(type):
   Example:
     >>> from kaamiki import Neo
     >>>
-    >>> class DummyClass(metaclass=Neo):
+    >>> class YourClass(metaclass=Neo):
     ...     pass
     ...
     >>> singleton_obj1 = DummyClass()
