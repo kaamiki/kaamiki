@@ -37,8 +37,6 @@ import urllib.error
 import urllib.request
 from distutils.version import StrictVersion
 from threading import Lock
-from types import TracebackType
-from typing import Tuple
 
 from pkg_resources import parse_version
 
@@ -46,7 +44,6 @@ __name__ = "kaamiki"
 __version__ = "0.0.1"
 __author__ = "Kaamiki Development Team"
 
-SYS_EXC_INFO_TYPE = Tuple[type, BaseException, TracebackType]
 PYPI_URL = f"https://pypi.org/pypi/{__name__}/json"
 
 
