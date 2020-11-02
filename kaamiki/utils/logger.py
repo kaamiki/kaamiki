@@ -44,7 +44,7 @@ __all__ = ["Logger"]
 # and flexibility that is required in most of the development scenarios.
 
 RESET = "\u001b[39m"
-GRAY = "\u001b[38;5;8m"
+GRAY = "\u001b[38;5;244m"
 RED = "\u001b[38;5;196m"
 GREEN = "\u001b[38;5;46m"
 YELLOW = "\u001b[38;5;11m"
@@ -55,7 +55,7 @@ ORANGE = "\u001b[38;5;208m"
 DEFAULT_LOG_PATH = _os.expanduser(f"~/.{__name__}/{SESSION_USER}/logs/")
 
 _colors = {
-    logging.DEBUG: BLUE,
+    logging.DEBUG: GRAY,
     logging.INFO: GREEN,
     logging.WARNING: YELLOW,
     logging.ERROR: ORANGE,
