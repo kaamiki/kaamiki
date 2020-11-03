@@ -167,7 +167,7 @@ class _StreamHandler(logging.StreamHandler, metaclass=Neo):
     return log.replace(record.levelname, colored)
 
 
-class Logger(object):
+class Logger(logging.LoggerAdapter):
   """
   Logger class for logging all active instances of Kaamiki.
 
@@ -220,7 +220,7 @@ class Logger(object):
 
   Example:
     >>> from kaamiki.utils.logger import Logger
-    >>> logger = Logger().log
+    >>> logger = Logger()
     >>>
     >>> logger.info("This is how you use the Logger class")
   """
@@ -273,12 +273,12 @@ class Logger(object):
     try:
       self.py = _os.abspath(sys.modules["__main__"].__file__)
     except AttributeError:
-      self.py = "terminal.py"
-    self.name = replace_chars(name if name else Path(self.py).stem)
+      self.py = "console.py"
+    self._name = replace_chars(name if name else Path(self.py).stem)
     self.path = path if path else DEFAULT_LOG_PATH
     if not _os.exists(self.path):
       os.makedirs(self.path)
-    self._file = _os.join(self.path, "".join([self.name, ".log"]))
+    self._file = _os.join(self.path, "".join([self._name, ".log"]))
     if self.rotate:
       if self.rotate_by == "time":
         self.file = TimedRotatingFileHandler(
@@ -302,10 +302,4 @@ class Logger(object):
 
   def __repr__(self) -> str:
     """Return string representation of Kaamiki's logger object."""
-    return (f"<KaamikiLogger: {self.logger.name} "
-            f"- [{self.level}] - {self._file}>")
-
-  @property
-  def log(self) -> logging.LoggerAdapter:
-    """Return an adapter to log events."""
-    return logging.LoggerAdapter(self.logger, extra=self.extra)
+    return f"KaamikiLogger(name={self.root!r}, level={self.level!r})"
