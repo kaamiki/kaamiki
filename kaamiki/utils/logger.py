@@ -34,7 +34,7 @@ from pathlib import Path
 from types import TracebackType
 from typing import Tuple, Union
 
-from kaamiki import SESSION_USER, Neo, __name__, replace_chars
+from kaamiki import BASE_DIR, SESSION_USER, Neo, __name__, replace_chars
 
 __all__ = ["Logger"]
 
@@ -53,7 +53,11 @@ CYAN = "\u001b[38;5;14m"
 ORANGE = "\u001b[38;5;208m"
 
 SYS_EXC_INFO_TYPE = Tuple[type, BaseException, TracebackType]
-DEFAULT_LOG_PATH = _os.expanduser(f"~/.{__name__}/{SESSION_USER}/logs/")
+
+# NOTE: All log events are recorded in `DEFAULT_LOG_PATH` by default, if
+# not being overridden while instantiating. Kaamiki doesn't record error
+# logs seperately!
+DEFAULT_LOG_PATH = BASE_DIR / SESSION_USER / "logs/" 
 
 _colors = {
     logging.DEBUG: GRAY,
@@ -236,7 +240,7 @@ class Logger(logging.LoggerAdapter):
                extra: dict = {},
                rotate: bool = True,
                rotate_by: str = "size",
-               max_bytes: int = 1000000,  # Rotate when logs reach 1 MB
+               max_bytes: int = 1024000,  # Rotate when logs reach 1 MB
                when: str = "h",
                interval: int = 1,
                utc: bool = False,
