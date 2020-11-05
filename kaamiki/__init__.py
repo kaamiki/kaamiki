@@ -36,6 +36,7 @@ import string
 import urllib.error
 import urllib.request
 from distutils.version import StrictVersion
+from pathlib import Path
 from threading import Lock
 
 from pkg_resources import parse_version
@@ -44,16 +45,9 @@ __name__ = "kaamiki"
 __version__ = "0.0.1"
 __author__ = "Kaamiki Development Team"
 
-PYPI_URL = f"https://pypi.org/pypi/{__name__}/json"
+__all__ = ["BASE_DIR", "SESSION_USER", "Neo", "replace_chars", "show_version"]
 
-
-def replace_chars(text: str, sub: str = "_") -> str:
-  """Replace special characters with substitution string."""
-  # See https://stackoverflow.com/a/23996414/14316408 for more help.
-  return re.sub(r"[" + re.escape(string.punctuation) + "]", sub, text).lower()
-
-
-SESSION_USER = replace_chars(getpass.getuser())
+BASE_DIR = Path().home() / f".{__name__}"
 
 
 class Neo(type):
@@ -95,9 +89,16 @@ class Neo(type):
     return cls._instances[cls]
 
 
+def replace_chars(text: str, sub: str = "_") -> str:
+  """Replace special characters with substitution string."""
+  # See https://stackoverflow.com/a/23996414/14316408 for more help.
+  return re.sub(r"[" + re.escape(string.punctuation) + "]", sub, text).lower()
+
+
 def latest_version() -> str:
   """Check for the latest stable version of Kaamiki on PyPI."""
   try:
+    PYPI_URL = f"https://pypi.org/pypi/{__name__}/json"
     data = json.load(urllib.request.urlopen(PYPI_URL))["releases"].keys()
     version = sorted(data, key=StrictVersion, reverse=True)[0]
     return version if version else __version__
@@ -134,3 +135,6 @@ def show_version() -> None:
     print(f"WARNING: Internet connection is questionable at the moment. "
           f"Couldn't check for the latest stable version of {pkg}.\nInstalled "
           f"version is v{__version__}")
+
+
+SESSION_USER = replace_chars(getpass.getuser())

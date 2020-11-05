@@ -34,7 +34,7 @@ from pathlib import Path
 from types import TracebackType
 from typing import Tuple, Union
 
-from kaamiki import SESSION_USER, Neo, __name__, replace_chars
+from kaamiki import BASE_DIR, SESSION_USER, Neo, __name__, replace_chars
 
 __all__ = ["Logger"]
 
@@ -53,7 +53,11 @@ CYAN = "\u001b[38;5;14m"
 ORANGE = "\u001b[38;5;208m"
 
 SYS_EXC_INFO_TYPE = Tuple[type, BaseException, TracebackType]
-DEFAULT_LOG_PATH = _os.expanduser(f"~/.{__name__}/{SESSION_USER}/logs/")
+
+# NOTE: All log events are recorded in `DEFAULT_LOG_PATH` by default, if
+# not being overridden while instantiating. Kaamiki doesn't record error
+# logs seperately!
+DEFAULT_LOG_PATH = BASE_DIR / SESSION_USER / "logs/" 
 
 _colors = {
     logging.DEBUG: GRAY,
@@ -167,7 +171,7 @@ class _StreamHandler(logging.StreamHandler, metaclass=Neo):
     return log.replace(record.levelname, colored)
 
 
-class Logger(object):
+class Logger(logging.LoggerAdapter):
   """
   Logger class for logging all active instances of Kaamiki.
 
@@ -220,7 +224,7 @@ class Logger(object):
 
   Example:
     >>> from kaamiki.utils.logger import Logger
-    >>> logger = Logger().log
+    >>> logger = Logger()
     >>>
     >>> logger.info("This is how you use the Logger class")
   """
@@ -236,7 +240,7 @@ class Logger(object):
                extra: dict = {},
                rotate: bool = True,
                rotate_by: str = "size",
-               max_bytes: int = 1000000,  # Rotate when logs reach 1 MB
+               max_bytes: int = 1024000,  # Rotate when logs reach 1 MB
                when: str = "h",
                interval: int = 1,
                utc: bool = False,
@@ -273,12 +277,12 @@ class Logger(object):
     try:
       self.py = _os.abspath(sys.modules["__main__"].__file__)
     except AttributeError:
-      self.py = "terminal.py"
-    self.name = replace_chars(name if name else Path(self.py).stem)
+      self.py = "console.py"
+    self._name = replace_chars(name if name else Path(self.py).stem)
     self.path = path if path else DEFAULT_LOG_PATH
     if not _os.exists(self.path):
       os.makedirs(self.path)
-    self._file = _os.join(self.path, "".join([self.name, ".log"]))
+    self._file = _os.join(self.path, "".join([self._name, ".log"]))
     if self.rotate:
       if self.rotate_by == "time":
         self.file = TimedRotatingFileHandler(
@@ -302,10 +306,4 @@ class Logger(object):
 
   def __repr__(self) -> str:
     """Return string representation of Kaamiki's logger object."""
-    return (f"<KaamikiLogger: {self.logger.name} "
-            f"- [{self.level}] - {self._file}>")
-
-  @property
-  def log(self) -> logging.LoggerAdapter:
-    """Return an adapter to log events."""
-    return logging.LoggerAdapter(self.logger, extra=self.extra)
+    return f"KaamikiLogger(name={self.root!r}, level={self.level!r})"
