@@ -50,6 +50,9 @@ __all__ = ["BASE_DIR", "SESSION_USER", "Neo", "replace_chars", "show_version"]
 BASE_DIR = Path().home() / f".{__name__}"
 
 
+SESSION_USER = replace_chars(getpass.getuser())
+
+
 class Neo(type):
   """
   An implementation of thread-safe Singleton design pattern.
@@ -89,10 +92,10 @@ class Neo(type):
     return cls._instances[cls]
 
 
-def replace_chars(text: str, sub: str = "_") -> str:
+  def replace_chars(text: str, sub: str = "_") -> str:
   """Replace special characters with substitution string."""
   # See https://stackoverflow.com/a/23996414/14316408 for more help.
-  return re.sub(r"[" + re.escape(string.punctuation) + "]", sub, text).lower()
+    return re.sub(r"[" + re.escape(string.punctuation) + "]", sub, text).lower()
 
 
 def latest_version() -> str:
@@ -138,3 +141,4 @@ def show_version() -> None:
 
 
 SESSION_USER = replace_chars(getpass.getuser())
+
