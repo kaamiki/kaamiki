@@ -26,12 +26,11 @@ A Python based utility for logging Kaamiki events.
 import datetime
 import logging
 import os
-import os.path as _os
 import sys
 from distutils.sysconfig import get_python_lib
 from logging.handlers import RotatingFileHandler, TimedRotatingFileHandler
 from pathlib import Path
-from types import TracebackType
+from types import TracebackType as _type
 from typing import Tuple, Union
 
 from kaamiki import BASE_DIR, SESSION_USER, Neo, __name__, replace_chars
@@ -43,6 +42,20 @@ __all__ = ["Logger"]
 # implementation but rather adding some level of scalability, simplicity
 # and flexibility that is required in most of the development scenarios.
 
+LOGS_DIR = "logs"
+
+# NOTE: All log events are recorded in `DEFAULT_LOG_PATH` by default, if
+# not being overridden while instantiating. Kaamiki doesn't record error
+# logs seperately!
+DEFAULT_LOG_PATH = BASE_DIR / SESSION_USER / LOGS_DIR
+
+DEFAULT_DATE_FMT = "%b %d, %Y %H:%M:%S"
+DEFAULT_EXC_FMT = "{0}: {1} {2}on line {3}"
+DEFAULT_LOG_FMT = ("%(asctime)s.%(msecs)03d %(levelname)8s "
+                   "%(process)07d [{:>15}] {:>30}:%(lineno)04d : %(message)s")
+
+DEFAULT_MODULE_NAME_LIMIT = 30
+
 RESET = "\u001b[39m"
 GRAY = "\u001b[38;5;244m"
 RED = "\u001b[38;5;196m"
@@ -51,13 +64,6 @@ YELLOW = "\u001b[38;5;11m"
 BLUE = "\u001b[38;5;39m"
 CYAN = "\u001b[38;5;14m"
 ORANGE = "\u001b[38;5;208m"
-
-SYS_EXC_INFO_TYPE = Tuple[type, BaseException, TracebackType]
-
-# NOTE: All log events are recorded in `DEFAULT_LOG_PATH` by default, if
-# not being overridden while instantiating. Kaamiki doesn't record error
-# logs seperately!
-DEFAULT_LOG_PATH = BASE_DIR / SESSION_USER / "logs/" 
 
 _colors = {
     logging.DEBUG: GRAY,
@@ -94,17 +100,16 @@ class _Formatter(logging.Formatter, metaclass=Neo):
     strings, or use default Kaamiki format as said above.
     """
     if not date_fmt:
-      date_fmt = "%b %d, %Y %H:%M:%S"
+      date_fmt = DEFAULT_DATE_FMT
     self.date_fmt = date_fmt
     self.user_fmt = True
     if not fmt:
       self.user_fmt = False
-      fmt = ("%(asctime)s.%(msecs)03d %(levelname)8s %(process)07d "
-             "[{:>15}] {:>30}:%(lineno)04d : %(message)s")
+      fmt = DEFAULT_LOG_FMT
     self.fmt = fmt
-    self.exc_fmt = "{0}: {1} {2}on line {3}"
+    self.exc_fmt = DEFAULT_EXC_FMT
 
-  def formatException(self, ei: SYS_EXC_INFO_TYPE) -> str:
+  def formatException(self, ei: Tuple[type, BaseException, _type]) -> str:
     """Format and return the specified exception info as a string."""
     return repr(super().formatException(ei))
 
@@ -122,8 +127,9 @@ class _Formatter(logging.Formatter, metaclass=Neo):
       # Shorten longer module names with an ellipsis while logging.
       # This ensures length of module name stay consistent in logs.
       module = self.relative_path(record.pathname)
-      if len(module) > 30:
-        module = module[:27] + bool(module[27:]) * "..."
+      if len(module) > DEFAULT_MODULE_NAME_LIMIT:
+        module = (module[:DEFAULT_MODULE_NAME_LIMIT - 3] +
+                  bool(module[DEFAULT_MODULE_NAME_LIMIT - 3:]) * "...")
       log = logging.Formatter(self.fmt.format(thd, module), self.date_fmt)
     log = log.format(record)
     if record.exc_text:
@@ -208,9 +214,9 @@ class Logger(logging.LoggerAdapter):
 
   When `rotate_by` is set to "size", `Rollover` occurs whenever the
   current log file is nearly `max_bytes` in length. If `max_bytes` is
-  zero, rollover never occurs. If backup_count is >= 1, the system will
+  zero, rollover never occurs. If `backups` is >= 1, the system will
   successively create new files with extensions ".1", ".2" etc.
-  appended to it. For example, with a backup_count of 5 and a base file
+  appended to it. For example, with a backups of 5 and a base file
   name of "kaamiki.log", you would get "kaamiki.log", "kaamiki.log.1",
   "kaamiki.log.2", ... through to "kaamiki.log.5". The file being
   written to is always "kaamiki.log" - when it gets filled up, it is
@@ -219,8 +225,8 @@ class Logger(logging.LoggerAdapter):
   "kaamiki.log.3" etc. respectively.
 
   When `rotate_by` is set to "time" log rotation occurs at certain time
-  intervals. If backup_count is > 0, when rollover is done, no more than
-  backup_count files are kept - the oldest ones are deleted.
+  intervals. If `backups` is > 0, when rollover is done, no more than
+  backups files are kept - the oldest ones are deleted.
 
   Example:
     >>> from kaamiki.utils.logger import Logger
@@ -229,23 +235,25 @@ class Logger(logging.LoggerAdapter):
     >>> logger.info("This is how you use the Logger class")
   """
 
+  suffix = ".log"
+
   def __init__(self,
                fmt: str = None,
                date_fmt: str = None,
                level: Union[int, str] = None,
                name: str = None,
-               path: str = None,
+               path: Union[Path, str] = None,
                root: str = None,
                colored: bool = True,
-               extra: dict = {},
+               extra: dict = None,
                rotate: bool = True,
                rotate_by: str = "size",
-               max_bytes: int = 1024000,  # Rotate when logs reach 1 MB
+               max_bytes: int = 0,
                when: str = "h",
                interval: int = 1,
                utc: bool = False,
                at_time: datetime.datetime = None,
-               backup_count: int = 5,
+               backups: int = 0,
                encoding: str = None,
                delay: bool = False) -> None:
     """
@@ -260,7 +268,7 @@ class Logger(logging.LoggerAdapter):
     self.level = logging.getLevelName(level if level else logging.DEBUG)
     self.root = root
     self.colored = colored
-    self.extra = extra
+    self.extra = extra if extra else {}
     self.formatter = _Formatter(self.date_fmt, self.fmt)
     self.stream = _StreamHandler() if self.colored else logging.StreamHandler()
     self.stream.setFormatter(self.formatter)
@@ -271,29 +279,28 @@ class Logger(logging.LoggerAdapter):
     self.interval = interval
     self.utc = utc
     self.at_time = at_time
-    self.backup_count = backup_count
+    self.backups = backups
     self.encoding = encoding
     self.delay = delay
     try:
-      self.py = _os.abspath(sys.modules["__main__"].__file__)
+      self.py = os.path.abspath(sys.modules["__main__"].__file__)
     except AttributeError:
       self.py = "console.py"
     self._name = replace_chars(name if name else Path(self.py).stem)
     self.path = path if path else DEFAULT_LOG_PATH
-    if not _os.exists(self.path):
+    if not Path(self.path).exists():
       os.makedirs(self.path)
-    self._file = _os.join(self.path, "".join([self._name, ".log"]))
+    self._file = Path(self.path) / (self._name + self.suffix)
     if self.rotate:
       if self.rotate_by == "time":
         self.file = TimedRotatingFileHandler(
-            self._file, self.when, self.interval, self.backup_count,
+            self._file, self.when, self.interval, self.backups,
             self.encoding, self.delay, self.utc, self.at_time)
       else:
         # If rotation or rollover is wanted, it makes no sense to use
-        # another mode than `a`. Hence, the `mode` argument is not
-        # configurable.
+        # another mode than `a`. Hence, the `mode` is not configurable.
         self.file = RotatingFileHandler(
-            self._file, "a", self.max_bytes, self.backup_count, self.encoding,
+            self._file, "a", self.max_bytes, self.backups, self.encoding,
             self.delay)
     else:
       self.file = logging.FileHandler(
@@ -306,4 +313,4 @@ class Logger(logging.LoggerAdapter):
 
   def __repr__(self) -> str:
     """Return string representation of Kaamiki's logger object."""
-    return f"KaamikiLogger(name={self.root!r}, level={self.level!r})"
+    return f"Logger(root={self.root!r}, level={self.level!r})"
