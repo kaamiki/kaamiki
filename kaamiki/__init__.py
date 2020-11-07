@@ -47,10 +47,13 @@ __author__ = "Kaamiki Development Team"
 
 __all__ = ["BASE_DIR", "SESSION_USER", "Neo", "replace_chars", "show_version"]
 
+# Base directory which is used for caching, logging and storing details
+# and data generated for/of a Kaamiki session. Making any modifications
+# to the `BASE_DIR` can cause issues as all the session related events,
+# logs and data are stored in this directory.
 BASE_DIR = Path().home() / f".{__name__}"
 
-
-SESSION_USER = replace_chars(getpass.getuser())
+DEFAULT_SEPERATOR = "_"
 
 
 class Neo(type):
@@ -92,10 +95,10 @@ class Neo(type):
     return cls._instances[cls]
 
 
-  def replace_chars(text: str, sub: str = "_") -> str:
+def replace_chars(text: str, sub: str = DEFAULT_SEPERATOR) -> str:
   """Replace special characters with substitution string."""
   # See https://stackoverflow.com/a/23996414/14316408 for more help.
-    return re.sub(r"[" + re.escape(string.punctuation) + "]", sub, text).lower()
+  return re.sub(r"[" + re.escape(string.punctuation) + "]", sub, text).lower()
 
 
 def latest_version() -> str:
@@ -141,4 +144,3 @@ def show_version() -> None:
 
 
 SESSION_USER = replace_chars(getpass.getuser())
-

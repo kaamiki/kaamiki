@@ -59,14 +59,14 @@ def parse_readme() -> str:
   with open("README.md", "r") as file:
     return file.read()
 
-  
+
 with open("requirements.txt", "r") as requirements:
   if os.name == "nt":
     packages = [idx for idx in requirements]
   else:
     skip = ["pywin32", "pypywin32", "pywinauto"]
     packages = [idx for idx in requirements if idx.rstrip() not in skip]
- 
+
 setup(
     name=__name__,
     version=__version__,

@@ -89,7 +89,7 @@ class Parser(argparse.ArgumentParser):
     self.options = []
     # Define program keyword, `prog` as `kaamiki` and make
     # `add_help=False` to add support for custom help message.
-    super().__init__(prog="kaamiki", add_help=False, *args, **kwargs)
+    super().__init__(prog=__name__, add_help=False, *args, **kwargs)
 
   def add_argument(self, *args: Any, **kwargs: Any) -> None:
     """
