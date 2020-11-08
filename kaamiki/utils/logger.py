@@ -37,7 +37,7 @@ from kaamiki import BASE_DIR, SESSION_USER, Neo, __name__, replace_chars
 
 __all__ = ["Logger"]
 
-# NOTE: Most of the doc string content is referenced from the original
+# NOTE: Most of the docstring content is referenced from the original
 # logging module as we are not changing the behaviour of any of its
 # implementation but rather adding some level of scalability, simplicity
 # and flexibility that is required in most of the development scenarios.
@@ -50,7 +50,7 @@ LOGS_DIR = "logs"
 DEFAULT_LOG_PATH = BASE_DIR / SESSION_USER / LOGS_DIR
 
 DEFAULT_DATE_FMT = "%b %d, %Y %H:%M:%S"
-DEFAULT_EXC_FMT = "{0}: {1} {2}on line {3}"
+DEFAULT_EXC_FMT = "{0}: {1} {2}on line {3}."
 DEFAULT_LOG_FMT = ("%(asctime)s.%(msecs)03d %(levelname)8s "
                    "%(process)07d [{:>15}] {:>30}:%(lineno)04d : %(message)s")
 
@@ -97,7 +97,7 @@ class _Formatter(logging.Formatter, metaclass=Neo):
     Initialize formatter.
 
     Initialize the formatter either with the specified format
-    strings, or use default Kaamiki format as said above.
+    strings, or use default kaamiki format as said above.
     """
     if not date_fmt:
       date_fmt = DEFAULT_DATE_FMT
@@ -179,9 +179,9 @@ class _StreamHandler(logging.StreamHandler, metaclass=Neo):
 
 class Logger(logging.LoggerAdapter):
   """
-  Logger class for logging all active instances of Kaamiki.
+  Logger class for logging all active instances of kaamiki.
 
-  The class captures all logged Kaamiki events and logs them silently.
+  The class captures all logged kaamiki events and logs them silently.
   Logger is packed with a convenient file handlers along with formatter
   which enables it to sequentially archive, record and clean logs.
 
@@ -255,12 +255,13 @@ class Logger(logging.LoggerAdapter):
                at_time: datetime.datetime = None,
                backups: int = 0,
                encoding: str = None,
-               delay: bool = False) -> None:
+               delay: bool = False,
+               to_file: bool = True) -> None:
     """
     Initialize logger.
 
     Initialize the logger either with default or non-default settings.
-    Default args are configured to work directly with Kaamiki, although
+    Default args are configured to work directly with kaamiki, although
     the behaviour can be easily overridden.
     """
     self.fmt = fmt
@@ -282,6 +283,9 @@ class Logger(logging.LoggerAdapter):
     self.backups = backups
     self.encoding = encoding
     self.delay = delay
+    self.to_file = to_file
+    self.logger = logging.getLogger(self.root if self.root else None)
+    self.logger.setLevel(self.level)
     try:
       self.py = os.path.abspath(sys.modules["__main__"].__file__)
     except AttributeError:
@@ -290,27 +294,26 @@ class Logger(logging.LoggerAdapter):
     self.path = path if path else DEFAULT_LOG_PATH
     if not Path(self.path).exists():
       os.makedirs(self.path)
-    self._file = Path(self.path) / (self._name + self.suffix)
-    if self.rotate:
-      if self.rotate_by == "time":
-        self.file = TimedRotatingFileHandler(
-            self._file, self.when, self.interval, self.backups,
-            self.encoding, self.delay, self.utc, self.at_time)
+    if self.to_file:
+      self._file = Path(self.path) / (self._name + self.suffix)
+      if self.rotate:
+        if self.rotate_by == "time":
+          self.file = TimedRotatingFileHandler(
+              self._file, self.when, self.interval, self.backups,
+              self.encoding, self.delay, self.utc, self.at_time)
+        else:
+          # If rotation or rollover is wanted, it makes no sense to use
+          # another mode than `a`. Hence, the `mode` is not configurable.
+          self.file = RotatingFileHandler(
+              self._file, "a", self.max_bytes, self.backups, self.encoding,
+              self.delay)
       else:
-        # If rotation or rollover is wanted, it makes no sense to use
-        # another mode than `a`. Hence, the `mode` is not configurable.
-        self.file = RotatingFileHandler(
-            self._file, "a", self.max_bytes, self.backups, self.encoding,
-            self.delay)
-    else:
-      self.file = logging.FileHandler(
-          self._file, "a", self.encoding, self.delay)
-    self.file.setFormatter(self.formatter)
-    self.logger = logging.getLogger(self.root if self.root else None)
-    self.logger.setLevel(self.level)
-    self.logger.addHandler(self.file)
+        self.file = logging.FileHandler(
+            self._file, "a", self.encoding, self.delay)
+      self.file.setFormatter(self.formatter)
+      self.logger.addHandler(self.file)
     self.logger.addHandler(self.stream)
 
   def __repr__(self) -> str:
-    """Return string representation of Kaamiki's logger object."""
+    """Return string representation of kaamiki's logger object."""
     return f"Logger(root={self.root!r}, level={self.level!r})"
