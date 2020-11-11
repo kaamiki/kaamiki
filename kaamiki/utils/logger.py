@@ -34,6 +34,7 @@ from types import TracebackType as _type
 from typing import Tuple, Union
 
 from kaamiki import BASE_DIR, SESSION_USER, Neo, __name__, replace_chars
+from kaamiki.utils.exceptions import InvalidArgumentError
 
 __all__ = ["Logger"]
 
@@ -42,19 +43,25 @@ __all__ = ["Logger"]
 # implementation but rather adding some level of scalability, simplicity
 # and flexibility that is required in most of the development scenarios.
 
-LOGS_DIR = "logs"
+_LOGS_DIR = "logs"
 
-# NOTE: All log events are recorded in `DEFAULT_LOG_PATH` by default, if
-# not being overridden while instantiating. Kaamiki doesn't record error
-# logs seperately!
-DEFAULT_LOG_PATH = BASE_DIR / SESSION_USER / LOGS_DIR
+# NOTE: All log events are recorded in `_DEFAULT_LOG_PATH` by default,
+# if not being overridden while instantiating. Kaamiki doesn't record
+# error logs seperately!
+_DEFAULT_LOG_PATH = BASE_DIR / SESSION_USER / _LOGS_DIR
 
-DEFAULT_DATE_FMT = "%b %d, %Y %H:%M:%S"
-DEFAULT_EXC_FMT = "{0}: {1} {2}on line {3}."
-DEFAULT_LOG_FMT = ("%(asctime)s.%(msecs)03d %(levelname)8s "
-                   "%(process)07d [{:>15}] {:>30}:%(lineno)04d : %(message)s")
+# Logging formats for kaamiki. These are formats for date, exception
+# logging message and the log record. Only `_DEFAULT_EXC_FMT` is not an
+# available option for changing.
+_DEFAULT_DATE_FMT = "%b %d, %Y %H:%M:%S"
+_DEFAULT_LOG_FMT = ("%(asctime)s.%(msecs)03d %(levelname)8s "
+                    "%(process)07d [{:>15}] {:>30}:%(lineno)04d : %(message)s")
+_DEFAULT_EXC_FMT = "{0}: {1} {2} on line {3}."
 
-DEFAULT_MODULE_NAME_LIMIT = 30
+# Character limit for displaying the module name which is logging the
+# record. This value is useful only in case the logger in use uses the
+# default kaamiki logging format.
+_DEFAULT_MODULE_NAME_LIMIT = 30
 
 RESET = "\u001b[39m"
 GRAY = "\u001b[38;5;244m"
@@ -100,14 +107,14 @@ class _Formatter(logging.Formatter, metaclass=Neo):
     strings, or use default kaamiki format as said above.
     """
     if not date_fmt:
-      date_fmt = DEFAULT_DATE_FMT
+      date_fmt = _DEFAULT_DATE_FMT
     self.date_fmt = date_fmt
     self.user_fmt = True
     if not fmt:
       self.user_fmt = False
-      fmt = DEFAULT_LOG_FMT
+      fmt = _DEFAULT_LOG_FMT
     self.fmt = fmt
-    self.exc_fmt = DEFAULT_EXC_FMT
+    self.exc_fmt = _DEFAULT_EXC_FMT
 
   def formatException(self, ei: Tuple[type, BaseException, _type]) -> str:
     """Format and return the specified exception info as a string."""
@@ -127,9 +134,9 @@ class _Formatter(logging.Formatter, metaclass=Neo):
       # Shorten longer module names with an ellipsis while logging.
       # This ensures length of module name stay consistent in logs.
       module = self.relative_path(record.pathname)
-      if len(module) > DEFAULT_MODULE_NAME_LIMIT:
-        module = (module[:DEFAULT_MODULE_NAME_LIMIT - 3] +
-                  bool(module[DEFAULT_MODULE_NAME_LIMIT - 3:]) * "...")
+      if len(module) > _DEFAULT_MODULE_NAME_LIMIT:
+        module = (module[:_DEFAULT_MODULE_NAME_LIMIT - 3] +
+                  bool(module[_DEFAULT_MODULE_NAME_LIMIT - 3:]) * "...")
       log = logging.Formatter(self.fmt.format(thd, module), self.date_fmt)
     log = log.format(record)
     if record.exc_text:
@@ -291,12 +298,14 @@ class Logger(logging.LoggerAdapter):
     except AttributeError:
       self.py = "console.py"
     self._name = replace_chars(name if name else Path(self.py).stem)
-    self.path = path if path else DEFAULT_LOG_PATH
+    self.path = path if path else _DEFAULT_LOG_PATH
     if not Path(self.path).exists():
       os.makedirs(self.path)
     if self.to_file:
       self._file = Path(self.path) / (self._name + self.suffix)
       if self.rotate:
+        if self.rotate_by not in ("size", "time"):
+          raise InvalidArgumentError(arg=self.rotate_by, valid=True)
         if self.rotate_by == "time":
           self.file = TimedRotatingFileHandler(
               self._file, self.when, self.interval, self.backups,
