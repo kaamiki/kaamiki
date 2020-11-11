@@ -21,16 +21,15 @@ Kaamiki
 
 Kaamiki is a simple machine learning framework for obvious tasks.
 """
-# TODO(xames3): Add a descriptive doc string which would help the
-# users and developers alike to get an idea what and how Kaamiki
-# could assist them right out of the box with minimal efforts.
+# TODO(xames3): Add a descriptive docstring which would help the users
+# and developers alike to get an idea what and how kaamiki could assist
+# them right out of the box with minimal efforts.
 
 import os
-import os.path as _os
 import sys
 
 # Raise exceptions if the host system is not properly configured
-# for installing Kaamiki. See https://github.com/kaamiki/kaamiki
+# for installing kaamiki. See https://github.com/kaamiki/kaamiki
 # for more help.
 if sys.version_info < (3, ):
   sys.exit("Python 2 has officially reached end-of-life and is no longer "
@@ -46,12 +45,20 @@ if os.name == "nt" and sys.maxsize.bit_length() == 31:
 
 from setuptools import find_packages, setup
 
-from kaamiki import __author__, __name__, __version__
+from kaamiki import BASE_DIR, __author__, __name__, __version__
 
-# Flag which raises warning if the installed version of Kaamiki is
+# Flag which raises warning if the installed version of kaamiki is
 # either outdated or a nightly (development) build.
-STATUS_FLAG = 0
+STATUS = 0
+
 DESCRIPTION = __doc__.splitlines()[3]
+
+
+def parse_readme() -> str:
+  """Parse README.md for long description of kaamiki."""
+  with open("README.md", "r") as file:
+    return file.read()
+
 
 with open("requirements.txt", "r") as requirements:
   if os.name == "nt":
@@ -59,26 +66,6 @@ with open("requirements.txt", "r") as requirements:
   else:
     skip = ["pywin32", "pypywin32", "pywinauto"]
     packages = [idx for idx in requirements if idx.rstrip() not in skip]
-
-
-def parse_readme() -> str:
-  """Parse README.md for long description of Kaamiki."""
-  with open("README.md", "r") as file:
-    return file.read()
-
-
-def prepare() -> None:
-  """Prepare the required directory structure while setting up."""
-  # Create base directory for caching, logging and storing data for/of
-  # a Kaamiki session.
-  base = _os.expanduser(f"~/.{__name__}/")
-  if not _os.exists(base):
-    os.mkdir(base)
-  with open(os.path.join(base, "update"), "w") as file:
-    file.write(f"name: {__name__}\n"
-               f"version: {__version__}\n"
-               f"status: {STATUS_FLAG}")
-
 
 setup(
     name=__name__,
@@ -123,5 +110,12 @@ setup(
     ],
 )
 
-if __name__ == "__main__":
-  prepare()
+# Create base directory for caching, logging and storing data for/of
+# a kaamiki session.
+if not BASE_DIR.exists():
+  os.mkdir(BASE_DIR)
+with open(BASE_DIR / "update", "w") as update:
+  # TODO(xames3): Check if the status is really necessary with the team.
+  update.write(f"name: {__name__}\n"
+               f"version: {__version__}\n"
+               f"status: {STATUS}")
