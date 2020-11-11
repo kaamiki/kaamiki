@@ -39,16 +39,25 @@ def this_is_effing_bug() -> str:
 class KaamikiError(Exception):
   """Base exception class for all kaamiki related exceptions."""
 
-  def __init__(self, message: str, okay: bool, **kwargs):
-    if not okay:
+  def __init__(self, message: str, valid: bool = False, **kwargs) -> None:
+    if not valid:
       message += this_is_effing_bug()
     super().__init__(message)
     self.message = message
     for key, value in kwargs.items():
       setattr(self, key, value)
 
-  def __str__(self):
+  def __str__(self) -> str:
     return self.message.format(**vars(self))
+
+
+class InvalidArgumentError(KaamikiError):
+  """Exception to be raised when a wrong argument is passed."""
+
+  def __init__(self,
+               message: str = "{arg!r} is not a valid argument",
+               **kwargs) -> None:
+    super().__init__(message, **kwargs)
 
 
 class UnsupportedFileType(KaamikiError):
@@ -58,4 +67,25 @@ class UnsupportedFileType(KaamikiError):
           self,
           message: str = "FileIO operation not supported by {suffix!r} file",
           **kwargs):
+    super().__init__(message, **kwargs)
+
+
+class FileAlreadyClosed(KaamikiError):
+  """Exception to be raised when closing an already closed file."""
+
+  def __init__(self,
+               message: str = "File {file!r} is already closed",
+               **kwargs) -> None:
+    super().__init__(message, **kwargs)
+
+
+class PermissionDeniedError(KaamikiError):
+  """Exception to be raised when permissions aren't provided to file."""
+
+  def __init__(self,
+               file_path: str,
+               mode: str,
+               **kwargs) -> None:
+    action = "writing" if "r" in mode else "reading"
+    message = f"{file_path!r} doesn't have enough permission for {action} file"
     super().__init__(message, **kwargs)
