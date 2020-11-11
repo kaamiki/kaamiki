@@ -41,11 +41,14 @@ __all__ = ["main"]
 # change with time and modifications happening in the existing
 # implementation, so calling it directly is probably not a good idea.
 
-COPYRIGHT = f"Copyright (c) 2020 {__author__}. All rights reserved."
-EPILOG = (f"For specific information about a particular command, run "
-          f"\"{__name__} <command> -h\".")
-URL = "Read complete documentation at: https://github.com/kaamiki/kaamiki"
-USAGE = f"{__name__} <command> [options] ..."
+# Project URL and the copyright information should be added at the end
+# of all the parser object events.
+_URL = "Read complete documentation at: https://github.com/kaamiki/kaamiki"
+_COPYRIGHT = f"Copyright (c) 2020 {__author__}. All rights reserved."
+
+_USAGE = f"{__name__} <command> [options] ..."
+_EPILOG = (f"For specific information about a particular command, run "
+           f"\"{__name__} <command> -h\".")
 
 
 class Parser(argparse.ArgumentParser):
@@ -278,7 +281,7 @@ class Parser(argparse.ArgumentParser):
             str.isspace(self.program["epilog"]):
       epilog.append("\n")
       epilog.extend(epilog_wrapper.wrap(self.program["epilog"]))
-      epilog.append(f"\n{URL}\n\n{COPYRIGHT}\n")
+      epilog.append(f"\n{_URL}\n\n{_COPYRIGHT}\n")
 
     return description, commands, options, epilog
 
@@ -295,7 +298,7 @@ class Parser(argparse.ArgumentParser):
     sys.exit(1)
 
 
-def create_parser() -> Parser:
+def _create_parser() -> Parser:
   """
   Return parser to parse the command line input.
 
@@ -304,7 +307,7 @@ def create_parser() -> Parser:
   or function calls from kaamiki suite using simple commands.
   """
   # NOTE(xames3): Consider adding support for subparsers in future.
-  parser = Parser(usage=USAGE, epilog=EPILOG, conflict_handler="resolve")
+  parser = Parser(usage=_USAGE, epilog=_EPILOG, conflict_handler="resolve")
   parser.add_argument("-h", "--help", action="store_true",
                       help="Show this help message.",
                       default=argparse.SUPPRESS)
@@ -316,7 +319,7 @@ def create_parser() -> Parser:
 
 def main() -> None:
   """Primary kaamiki entry point."""
-  parser = create_parser()
+  parser = _create_parser()
   args = parser.parse_args()
 
   if hasattr(args, "function"):

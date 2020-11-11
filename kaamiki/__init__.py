@@ -53,7 +53,7 @@ __all__ = ["BASE_DIR", "SESSION_USER", "Neo", "replace_chars", "show_version"]
 # logs and data are stored in this directory.
 BASE_DIR = Path().home() / f".{__name__}"
 
-DEFAULT_SEPERATOR = "_"
+_DEFAULT_SEPARATOR = "_"
 
 
 class Neo(type):
@@ -95,7 +95,7 @@ class Neo(type):
     return cls._instances[cls]
 
 
-def replace_chars(text: str, sub: str = DEFAULT_SEPERATOR) -> str:
+def replace_chars(text: str, sub: str = _DEFAULT_SEPARATOR) -> str:
   """Replace special characters with substitution string."""
   # See https://stackoverflow.com/a/23996414/14316408 for more help.
   return re.sub(r"[" + re.escape(string.punctuation) + "]", sub, text).lower()
