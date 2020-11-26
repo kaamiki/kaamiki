@@ -27,7 +27,7 @@ from __future__ import annotations
 import fnmatch
 import os
 from pathlib import Path
-from typing import Any, Optional, Sequence, Union
+from typing import Any, List, Optional, Sequence, Union
 
 from kaamiki import Neo
 from kaamiki.utils import exceptions
@@ -152,7 +152,7 @@ class File(object, metaclass=Neo):
       self.file.flush()
 
   def close(self) -> None:
-    """Close file post IO operation."""
+    """Close file after the I/O operation."""
     self.file.close()
     self.closed = True
 
@@ -169,18 +169,26 @@ class File(object, metaclass=Neo):
         _rotate = True
     if _rotate:
       self.close()
-      os.rename(self.file_path, f"{self.file_path}.{self.idx}")
-      self.idx += 1
+      if self.file_path.exists():
+        os.rename(self.file_path, f"{self.file_path}.{self.idx}")
+        self.idx += 1
+      else:
+        raise FileNotFoundError
       self.open()
 
   def write(self,
-            *args: Sequence[Any],
-            new_line: bool = True) -> None:
+            *values: Sequence[Any],
+            sep: str = " ",
+            end: str = _CRLF) -> None:
+    """
+    Write data contents to file, clearing contents of the file on first
+    write and then appending on subsequent calls.
+    """
     if not self.is_writable:
       raise exceptions.PermissionDeniedError(self.name, self.mode, valid=True)
     if self.closed:
       raise exceptions.FileAlreadyClosed(file=self.name, valid=True)
-    raw = list(map(lambda x: "" if x is None else str(x), args))
-    self.file.write(" ".join(raw) + _CRLF if new_line else "")
+    raw = list(map(lambda x: "" if x is None else str(x), values))
+    self.file.write(sep.join(raw) + end)
     self.flush()
     self.rotate()
