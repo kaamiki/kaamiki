@@ -128,7 +128,7 @@ class File(object, metaclass=Neo):
   @property
   def create(self) -> None:
     """Create an empty file if it doesn't exists."""
-    if self.file_path.exists():
+    if not self.file_path.exists():
       self.file_path.touch()
 
   def open(self) -> None:
@@ -192,3 +192,19 @@ class File(object, metaclass=Neo):
     self.file.write(sep.join(raw) + end)
     self.flush()
     self.rotate()
+
+
+with File("filename.txt", "w") as f:
+  f.write("data")
+
+
+# /mnt/storage/development/programming/kaamiki/misc/common.py
+# /mnt/storage/development/programming/kaamiki/misc/common.py.4
+# /mnt/storage/development/programming/kaamiki/misc/common.py.3
+# /mnt/storage/development/programming/kaamiki/misc/common.py.2
+# /mnt/storage/development/programming/kaamiki/misc/common.py.1
+
+with open(".txt") as f:
+  d = f.read()
+
+# print(d) -> []
