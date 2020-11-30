@@ -27,7 +27,7 @@ from __future__ import annotations
 import fnmatch
 import os
 from pathlib import Path
-from typing import Any, List, Optional, Sequence, Union
+from typing import Any, Dict, List, Optional, Sequence, Union
 
 from kaamiki import Neo
 from kaamiki.utils import exceptions
@@ -88,11 +88,10 @@ class File(object, metaclass=Neo):
 
   def __init__(self,
                file_path: Union[Path, str],
-               mode: str,
+               mode: Optional[str] = None,
                encoding: Optional[str] = None,
-               buffering: int = -1,
-               max_bytes: int = 0,
-               max_lines: int = 0) -> None:
+               buffering: Optional[int] = None,
+               **kwargs: Optional[Any]) -> None:
     """
     Initialize file
 
@@ -105,10 +104,15 @@ class File(object, metaclass=Neo):
     self.file_path = file_path.absolute()
     if self.suffix in _UNSUPPORTED_FILETYPES:
       raise exceptions.UnsupportedFileType(suffix=self.suffix, valid=True)
+    if mode is None:
+      mode = "r"
     if mode not in _SUPPORTED_FILEMODES or "b" in mode:
       raise NotImplementedError(f"{mode!r} mode is not supported by File")
     self.writable = mode in _WRITABLE_MODES
     self.readable = mode in _READABLE_MODES
+    self.kwargs = kwargs
+    max_bytes = self.kwargs.get("max_bytes", 0)
+    max_lines = self.kwargs.get("max_lines", 0)
     if self.readable:
       max_bytes = 0
       max_lines = 0
@@ -121,6 +125,8 @@ class File(object, metaclass=Neo):
       mode = "a"
     self.mode = mode
     self.encoding = encoding
+    if buffering is None:
+      buffering = -1
     self.buffering = buffering
     self.max_lines = max_lines
     self.max_bytes = max_bytes
@@ -216,10 +222,10 @@ class File(object, metaclass=Neo):
     has written enough lines to rollover to a new file.
     """
     _rotate = False
-    if self.max_bytes > 0:
+    if self.max_bytes and self.max_bytes > 0:
       if self.size > self.max_bytes:
         _rotate = True
-    if self.max_lines > 0:
+    if self.max_lines and self.max_lines > 0:
       if self.count_lines(self.file_path) + 1 > self.max_lines:
         _rotate = True
     if _rotate:
@@ -233,8 +239,7 @@ class File(object, metaclass=Neo):
 
   def write(self,
             *args: Sequence[Any],
-            sep: Optional[str] = None,
-            end: Optional[str] = None) -> None:
+            **kwargs: Optional[Any]) -> None:
     """
     Write contents.
 
@@ -247,7 +252,9 @@ class File(object, metaclass=Neo):
     if self.closed:
       raise exceptions.FileAlreadyClosed(file=self.name, valid=True)
     raw = list(map(lambda x: "" if x is None else str(x), args))
-    sep, end = _SEP if not sep else sep, _CRLF if not end else end
+    if kwargs is None:
+      kwargs = self.kwargs
+    sep, end = str(kwargs.get("sep", _SEP)), str(kwargs.get("end", _CRLF))
     self.file.write(sep.join(raw) + end)
     self.flush()
     self.rotate()
