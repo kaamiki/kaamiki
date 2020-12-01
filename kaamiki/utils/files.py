@@ -27,7 +27,7 @@ from __future__ import annotations
 import fnmatch
 import os
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Sequence, Union
+from typing import Any, List, Optional, Union
 
 from kaamiki import Neo
 from kaamiki.utils import exceptions
@@ -39,7 +39,9 @@ from kaamiki.utils import exceptions
 _UNSUPPORTED_FILETYPES = (".xlsx", ".xlsm", "xlsb")
 
 # All file modes except `bytes` and its derivatives aren't supported.
-# This is to avoid the conflicts while using threading.
+# This is to avoid the conflicts while using locks during threading.
+# If in case any support for reading or writing bytes is added, the
+# below tuple has to be modified with supported file modes.
 _SUPPORTED_FILEMODES = ("r", "w", "a", "r+", "w+", "a+", "t", "x")
 _WRITABLE_MODES = ("w", "w+", "a", "a+", "r+")
 _READABLE_MODES = ("r", "r+", "w+", "a+")
@@ -91,15 +93,16 @@ class File(object, metaclass=Neo):
                mode: Optional[str] = None,
                encoding: Optional[str] = None,
                buffering: Optional[int] = None,
-               **kwargs: Optional[Any]) -> None:
+               **kwargs: Any) -> None:
     """
     Initialize file
 
     Initialize file with default file-type parameters like file mode
-    type, encoding and buffering. Non-default parameters like max_bytes
-    and max_lines will decide whether the file is to be rotated or not
-    when writing.
+    type, encoding and buffering. Information about the non-default
+    arguments or supported kwargs is available in the documentation.
     """
+    # TODO(xames3): Add and maintain the documentation for supported
+    # kwargs. The documentation must be updated with the latest changes.
     file_path = Path(file_path)
     self.file_path = file_path.absolute()
     if self.suffix in _UNSUPPORTED_FILETYPES:
@@ -110,12 +113,12 @@ class File(object, metaclass=Neo):
       raise NotImplementedError(f"{mode!r} mode is not supported by File")
     self.writable = mode in _WRITABLE_MODES
     self.readable = mode in _READABLE_MODES
-    self.kwargs = kwargs
-    max_bytes = self.kwargs.get("max_bytes", 0)
-    max_lines = self.kwargs.get("max_lines", 0)
     if self.readable:
       max_bytes = 0
       max_lines = 0
+    self.kwargs = kwargs
+    max_bytes = self.kwargs.get("max_bytes", 0)
+    max_lines = self.kwargs.get("max_lines", 0)
     if max_bytes > 0 or max_lines > 0:
       # If rotation or rollover is wanted, it makes no sense to use
       # another mode than `a`. If for example `w` were specified,
@@ -128,11 +131,10 @@ class File(object, metaclass=Neo):
     if buffering is None:
       buffering = -1
     self.buffering = buffering
-    self.max_lines = max_lines
     self.max_bytes = max_bytes
-    self.file = None
-    self.closed = False
+    self.max_lines = max_lines
     self.idx = self.index
+    self.closed = False
     self.open()
     self.rotate()
 
@@ -185,12 +187,12 @@ class File(object, metaclass=Neo):
     if not self.file_path.exists():
       self.file_path.touch()
 
-  def count_lines(self, file_path: Union[Path, str]) -> int:
+  def lines(self, file_path: Union[Path, str]) -> int:
     """Count number of lines in a file."""
     return sum(1 for _ in open(file_path, "r"))
 
   def open(self) -> None:
-    """Open file for read-write operation."""
+    """Open file for I/O operation."""
     self.file = open(self.file_path, self.mode, self.buffering, self.encoding)
     self.closed = False
 
@@ -218,17 +220,18 @@ class File(object, metaclass=Neo):
     """
     Rotate file as needed.
 
-    Rotate file if the current file in use reaches a particular size or
-    has written enough lines to rollover to a new file.
+    Rotate file if the current file in use reaches a certain size or
+    has written enough lines to `rollover` to a new file. The rotation
+    happens only if some condition is met.
     """
-    _rotate = False
+    rollover = False
     if self.max_bytes and self.max_bytes > 0:
       if self.size > self.max_bytes:
-        _rotate = True
+        rollover = True
     if self.max_lines and self.max_lines > 0:
-      if self.count_lines(self.file_path) + 1 > self.max_lines:
-        _rotate = True
-    if _rotate:
+      if self.lines(self.file_path) > self.max_lines:
+        rollover = True
+    if rollover:
       self.close()
       if self.file_path.exists():
         os.rename(self.file_path, f"{self.file_path}.{self.idx}")
@@ -237,25 +240,23 @@ class File(object, metaclass=Neo):
         raise FileNotFoundError()
       self.open()
 
-  def write(self,
-            *args: Sequence[Any],
-            **kwargs: Optional[Any]) -> None:
+  def write(self, *args: Any, **kwargs: Any) -> None:
     """
     Write contents.
 
     Write contents to file, clearing contents of the file on first
-    write and then appending on subsequent calls. This methods also
-    rotates the file when needed.
+    write and then appending on subsequent calls. This method also
+    rotates the file if provided with correct argument.
     """
     if not self.writable:
       raise exceptions.PermissionDeniedError(self.name, self.mode, valid=True)
     if self.closed:
       raise exceptions.FileAlreadyClosed(file=self.name, valid=True)
-    raw = list(map(lambda x: "" if x is None else str(x), args))
-    if kwargs is None:
+    if not kwargs:
       kwargs = self.kwargs
-    sep, end = str(kwargs.get("sep", _SEP)), str(kwargs.get("end", _CRLF))
-    self.file.write(sep.join(raw) + end)
+    sep, end = kwargs.get("sep", _SEP), kwargs.get("end", _CRLF)
+    tmp = list(map(lambda x: "" if x is None else str(x), args))
+    self.file.write(sep.join(tmp) + end)
     self.flush()
     self.rotate()
 
@@ -264,22 +265,22 @@ class File(object, metaclass=Neo):
     Read contents.
 
     Read contents from all the related files to a list. This method
-    ensures that the data from all the files created by the write method
-    is read rather than depending on the user to loop through each file.
+    ensures that the data from all the files created by the `write`
+    method is read into a list rather than depending on the user to
+    loop through each file.
     """
     if not self.readable:
       raise exceptions.PermissionDeniedError(self.name, self.mode, valid=True)
     if not self.closed:
       self.close()
-      self.closed = True
     result = []
-    if files:
+    if not files:
+      files = self.index + 1
+    else:
       if files < 0:
         raise ValueError("File count can't be negative")
       if files > self.index:
         files = self.index + 1
-    else:
-      files = self.index + 1
     related_files = self.related_files + [self.name]
     for file in related_files[:files]:
       file = self.parent / Path(file)
