@@ -252,9 +252,11 @@ class File(object, metaclass=Neo):
       raise exceptions.PermissionDeniedError(self.name, self.mode, valid=True)
     if self.closed:
       raise exceptions.FileAlreadyClosed(file=self.name, valid=True)
-    if not kwargs:
-      kwargs = self.kwargs
+    kwargs = {**self.kwargs, **kwargs}
     sep, end = kwargs.get("sep", _SEP), kwargs.get("end", _CRLF)
+    header = kwargs.get("header")
+    if header and self.size == 0:
+      self.file.write(sep.join(header) + end)
     tmp = list(map(lambda x: "" if x is None else str(x), args))
     self.file.write(sep.join(tmp) + end)
     self.flush()
