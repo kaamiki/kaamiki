@@ -65,7 +65,7 @@ class UnsupportedFileType(KaamikiError):
 
   def __init__(
           self,
-          message: str = "File I/O operation not supported by {suffix!r} file",
+          message: str = "File I/O operation not supported by {ext!r} file",
           **kwargs):
     super().__init__(message, **kwargs)
 
