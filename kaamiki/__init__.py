@@ -38,6 +38,7 @@ import urllib.request
 from distutils.version import StrictVersion
 from pathlib import Path
 from threading import Lock
+from typing import Optional
 
 from pkg_resources import parse_version
 
@@ -53,7 +54,7 @@ __all__ = ["BASE_DIR", "SESSION_USER", "Neo", "replace_chars", "show_version"]
 # logs and data are stored in this directory.
 BASE_DIR = Path().home() / f".{__name__}"
 
-_DEFAULT_SEPARATOR = "_"
+_SEP = "_"
 
 
 class Neo(type):
@@ -95,9 +96,11 @@ class Neo(type):
     return cls._instances[cls]
 
 
-def replace_chars(text: str, sub: str = _DEFAULT_SEPARATOR) -> str:
+def replace_chars(text: str, sub: Optional[str] = None) -> str:
   """Replace special characters with substitution string."""
   # See https://stackoverflow.com/a/23996414/14316408 for more help.
+  if sub is None:
+    sub = _SEP
   return re.sub(r"[" + re.escape(string.punctuation) + "]", sub, text).lower()
 
 
