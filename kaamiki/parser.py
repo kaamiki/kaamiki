@@ -107,9 +107,8 @@ class Parser(argparse.ArgumentParser):
     # Prepare list of all command arguments i.e arguments with only one
     # name and not starting with `-` and are provided as positional
     # arguments to a method (values provided to the `dest=` argument).
-    if len(args) == 0 or (len(args) == 1 and
-                          isinstance(args[0], str) and not
-                          args[0].startswith("-")):
+    if len(args) == 0 or len(args) == 1 and \
+            isinstance(args[0], str) and not args[0].startswith("-"):
       argument["name"] = args[0] if len(args) > 0 else argument["dest"]
       self.commands.append(argument)
       return None
@@ -184,8 +183,8 @@ class Parser(argparse.ArgumentParser):
         command["left"] = command["name"]
 
     for option in self.options:
-      if "action" in option and (option["action"] == "store_true" or
-                                 option["action"] == "store_false"):
+      if "action" in option and option["action"] == "store_true" or \
+              option["action"] == "store_false":
         option["left"] = str.join(", ", option["flags"])
       else:
         flags = []
