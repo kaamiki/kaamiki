@@ -14,7 +14,7 @@
 # limitations under the License.
 #
 # Author(s):
-#     xames3 <44119552+xames3@users.noreply.github.com>
+#           xames3 <xames3.kaamiki@gmail.com>
 
 """
 Kaamiki
@@ -69,7 +69,7 @@ with open('requirements.txt', 'r') as requirements:
         packages = [idx for idx in requirements if idx.rstrip() not in skip]
 
 setup(
-    name=settings.MARK_ONE.lower(),
+    name=settings.MARK_ONE,
     version=settings.FRAMEWORK_VERSION,
     author=settings.AUTHOR,
     author_email=settings.AUTHOR_EMAIL,
