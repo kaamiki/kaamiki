@@ -1,4 +1,4 @@
-# Copyright (c) 2020 Kaamiki Development Team. All rights reserved.
+# Copyright (c) 2021 Kaamiki Development Team. All rights reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -14,9 +14,9 @@
 # limitations under the License.
 #
 # Author(s):
-#     xames3 <44119552+xames3@users.noreply.github.com>
+#           xames3 <xames3.kaamiki@gmail.com>
 
-"""Default Kaamiki settings."""
+"""Kaamiki's default settings and attributes."""
 
 # The below attribute shall never be changed, EVER!
 TRIBUTE = 'Charlotte'
@@ -24,7 +24,7 @@ TRIBUTE = 'Charlotte'
 # This is the name of the concept and the framework. The name is
 # purposely defined here so that it propagates in places where the
 # title is expected.
-MARK_ONE = 'Kaamiki'
+MARK_ONE = 'kaamiki'
 
 # The framework adheres to Semantic Versioning Specification (SemVer)
 # starting with version 0.0.1.
@@ -79,9 +79,9 @@ DEFAULT_ENCODING = 'utf-8'
 # Default seperator for strings and pathnames.
 DEFAULT_SEPERATOR = '_'
 
-# Default path for all framework related activities like logging, data
-# acquisition and caching. This directory can be overridden by the user
-# if needed.
-# NOTE(xames3): The implementation of overriding DEFAULT_BASE_DIR over
+# Default directory for all framework related activities like logging,
+# data acquisition and caching. This directory can be overridden by the
+# user if needed.
+# NOTE(xames3): The implementation of overriding DEFAULT_ROOT_DIR over
 #               user preference needs some serious thought.
-DEFAULT_BASE_DIR = MARK_ONE.lower()
+DEFAULT_ROOT_DIR = MARK_ONE

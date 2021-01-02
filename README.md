@@ -1,5 +1,5 @@
 <!-- 
-Copyright (c) 2020 Kaamiki Development Team. All rights reserved.
+Copyright (c) 2021 Kaamiki Development Team. All rights reserved.
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -22,5 +22,5 @@ Author(s):
 
 ## License
 
-Copyright (c) 2020 Kaamiki Development Team. All rights reserved.<br>
+Copyright (c) 2021 Kaamiki Development Team. All rights reserved.<br>
 Licensed under the [Apache](https://github.com/kaamiki/kaamiki/blob/master/LICENSE) License 2.0
