@@ -1,4 +1,4 @@
-# Copyright (c) 2020 Kaamiki Development Team. All rights reserved.
+# Copyright (c) 2021 Kaamiki Development Team. All rights reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -14,14 +14,14 @@
 # limitations under the License.
 #
 # Author(s):
-#     xames3 <44119552+xames3@users.noreply.github.com>
+#           xames3 <xames3.kaamiki@gmail.com>
 
 """Collection of all the exceptions raised by Kaamiki framework."""
 
 from typing import Any
 
 
-class KaamikiBaseException(Exception):
+class KaamikiError(Exception):
     """Base exception class for all exceptions raised by Kaamiki."""
 
     msg = ''
@@ -58,3 +58,15 @@ class KaamikiBaseException(Exception):
             f'information or even a sample code for reproducing this bug '
             f'while\nsubmitting an issue.\n'
         )
+
+
+class UnexpectedTypeError(KaamikiError):
+    """Exception class to inherit for type checking based errors."""
+
+
+class FileSystemError(KaamikiError):
+    """Exception class to inherit for all filesystem based errors."""
+
+
+class InvalidDirectoryName(FileSystemError):
+    """Exception to be raised when the path has invalid components."""
