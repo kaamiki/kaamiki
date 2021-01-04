@@ -16,7 +16,9 @@
 # Author(s):
 #           xames3 <xames3.kaamiki@gmail.com>
 
-"""Kaamiki's filesystem based validations."""
+"""
+Module for validating filesystem related actions.
+"""
 
 import errno
 import os
