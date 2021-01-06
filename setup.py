@@ -69,7 +69,7 @@ with open('requirements.txt', 'r') as requirements:
         packages = [idx for idx in requirements if idx.rstrip() not in skip]
 
 setup(
-    name=settings.MARK_ONE,
+    name=settings.MARK_II,
     version=settings.FRAMEWORK_VERSION,
     author=settings.AUTHOR,
     author_email=settings.AUTHOR_EMAIL,
