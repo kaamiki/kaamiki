@@ -20,6 +20,7 @@
 
 import os.path as _os
 import pathlib
+import platform
 
 # The below attribute shall never be changed, EVER!
 MARK_I = 'Charlotte'
@@ -67,6 +68,10 @@ SHORT_DESCRIPTION = ('Kaamiki is a simple cross-platform automation '
 # 2 = Beta (nightly build)
 # NOTE(xames3): Check and update mechanism is missing, must be added.
 INSTALLATION_STATUS = 0
+
+# Current operating system name. This information is traversed through
+# the entire framework for intermediate checks for optimizing workflows.
+OS = platform.system()
 
 # Default time zone to be used if the choosing local time zone is not
 # an available option. This parameter can be overridden by the user.
