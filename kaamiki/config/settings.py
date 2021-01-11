@@ -22,7 +22,11 @@ import os.path as _os
 import pathlib
 import platform
 
-# The below attribute shall never be changed, EVER!
+# NOTE: PACKAGING DETAILS
+# These attributes are used in the setup and for maintaining, packaging
+# and publishing the package on PyPI and GitHub respectively. These
+# attributes are not meant to be modified by anyone but the authors.
+# The below attribute shall never be changed by anyone, EVER!
 MARK_I = 'Charlotte'
 
 # This is the name of the concept and the framework. The name is
@@ -69,10 +73,17 @@ SHORT_DESCRIPTION = ('Kaamiki is a simple cross-platform automation '
 # NOTE(xames3): Check and update mechanism is missing, must be added.
 INSTALLATION_STATUS = 0
 
+# NOTE: USER AND OS DETAILS
+# These attributes are used for user and/or operating system specific
+# details. These attributes are read-only and cannot be altered by user.
 # Current operating system name. This information is traversed through
 # the entire framework for intermediate checks for optimizing workflows.
 OS = platform.system()
 
+# NOTE: DATETIME AND TIMEZONE DETAILS
+# These attributes deal with all the datetime and related parameters.
+# They are accessible and meant to be updated by the user as per the
+# requirements. 
 # Default time zone to be used if the choosing local time zone is not
 # an available option. This parameter can be overridden by the user.
 DEF_TZONE = 'UTC'
@@ -82,23 +93,29 @@ DEF_TZONE = 'UTC'
 # default.
 USE_LOCAL_TZONE = False
 
+# NOTE: SYSTEM LEVEL CONSTANTS
+# These attributes are set of generic constants that are fairly the
+# same for all development purposes. These can be accessed and modified
+# by the user as required.
 # Default encoding standard to use for all StringIO operations.
 DEF_ENCODING = 'utf-8'
 
-# Default separator for pathnames.
-DEF_SEP = _os.sep
-
 # Default separator for string substitution.
-DEF_SUBSTRING_SEP = '_'
+DEF_STRING_SEP = '_'
+
+# NOTE: FILE SYSTEM AND PATH DETAILS
+# These attributes are mainly related to the file name, file path,
+# file system, etc. These are accessible throughout the system as they
+# traverse for respective use cases.
+# Default separator for pathnames.
+DEF_PATH_SEP = _os.sep
 
 # Default directory for all framework related activities like logging,
 # data acquisition and caching. This directory can be overridden by the
 # user if needed.
-# NOTE(xames3): The implementation of overriding `ROOT_DIR` over user
-#               preference needs some serious thought.
 DEF_ROOT_DIR = pathlib.Path().home() / MARK_II
 
-# All log events are recorded in `LOG_DIR` by default, if not being
+# All log events are recorded in `LOGS_DIR` by default, if not being
 # overridden by the user settings. Kaamiki doesn't log errors
 # separately!
-DEF_LOG_DIR = DEF_ROOT_DIR / 'logs'
+DEF_LOGS_DIR = DEF_ROOT_DIR / 'logs'
