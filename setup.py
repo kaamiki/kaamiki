@@ -31,68 +31,56 @@ related functions, etc. which provides an extension to the developers
 existing work.
 """
 
-import os
 import sys
+
+from setuptools import find_packages, setup
+
+from kaamiki.config import constants
 
 # Raise early exceptions if the host system is not properly configured
 # for installing the framework.
 # See https://github.com/kaamiki/kaamiki for more help.
 if sys.version_info < (3, ):
-    sys.exit('Python 2 has officially reached end-of-life and is no '
-             'longer supported by Kaamiki. Please upgrade your python '
-             'interpreter to Python 3.6.X or above.')
+    sys.exit('Python 2 has officially reached end-of-life and is no longer '
+             'supported by Kaamiki. Please upgrade your python interpreter '
+             'to minimum Python 3.6.9 or above')
 
 if sys.version_info < (3, 6, 9):
     sys.exit('Kaamiki supports minimum python 3.6.9 and above. Kindly '
-             'upgrade your python interpreter to a suitable version.')
+             'upgrade your python interpreter to a suitable version')
 
-if os.name == 'nt' and sys.maxsize.bit_length() == 31:
-    sys.exit('32-bit Python runtime is not supported. '
-             'Please switch to 64-bit Python interpreter.')
+if constants.__OS == 'win32' and sys.maxsize.bit_length() == 31:
+    sys.exit('32-bit Python runtime is not supported.  Please switch to '
+             '64-bit Python interpreter')
 
-from setuptools import find_packages, setup
-
-from kaamiki.config import settings
-
-
-def parse_readme() -> str:
-    """Parse README.md for long description of kaamiki."""
-    with open('README.md', 'r') as file:
-        return file.read()
-
+skip_pkgs = []
 
 with open('requirements.txt', 'r') as requirements:
-    if os.name == 'nt':
-        packages = [idx for idx in requirements]
+    if constants.__OS == 'win32':
+        pkgs = requirements.readlines()
+    elif constants.__OS == 'linux' or constants.__OS == 'darwin':
+        pkgs = [pkg for pkg in requirements if pkg.rstrip() not in skip_pkgs]
     else:
-        skip = ['pywin32', 'pypywin32', 'pywinauto']
-        packages = [idx for idx in requirements if idx.rstrip() not in skip]
+        raise RuntimeError('Current platform is not supported by Kaamiki')
 
 setup(
-    name=settings.MARK_II,
-    version=settings.FRAMEWORK_VERSION,
-    author=settings.AUTHOR,
-    author_email=settings.AUTHOR_EMAIL,
-    maintainer=settings.MAINTAINER,
-    maintainer_email=settings.MAINTAINER_EMAIL,
-    url=settings.FRAMEWORK_URL,
-    license=settings.OSS_LICENSE,
-    description=settings.SHORT_DESCRIPTION,
-    long_description=parse_readme(),
+    name=constants.__NAME,
+    version=constants.__VERSION,
+    author=constants.__AUTHOR,
+    author_email=constants.__AUTHOR_EMAIL,
+    maintainer=constants.__MAINTAINER,
+    maintainer_email=constants.__MAINTAINER_EMAIL,
+    url=constants.__URL,
+    license=constants.__LICENSE,
+    description=constants.__DESCRIPTION,
+    long_description=open('README.md', encoding=constants.ENCODING).read(),
     long_description_content_type='text/markdown',
-    keywords='python kaamiki',
-    zip_safe=False,
-    install_requires=packages,
-    python_requires='>=3.6.9',
-    include_package_data=True,
+    install_requires=pkgs,
     packages=find_packages(),
     # You can find the complete list here:
     # https://pypi.python.org/pypi?%3Aaction=list_classifiers
     classifiers=[
         'Development Status :: 3 - Alpha',
-        'Intended Audience :: Developers',
-        'Intended Audience :: End Users/Desktop',
-        'Intended Audience :: Science/Research',
         'License :: OSI Approved :: Apache Software License',
         'Operating System :: OS Independent',
         'Programming Language :: Python',
@@ -100,9 +88,6 @@ setup(
         'Programming Language :: Python :: 3.6',
         'Programming Language :: Python :: 3.7',
         'Programming Language :: Python :: 3.8',
-        'Topic :: Home Automation',
-        'Topic :: Security',
-        'Topic :: Security :: Cryptography',
         'Topic :: Scientific/Engineering :: Artificial Intelligence',
     ],
 )
