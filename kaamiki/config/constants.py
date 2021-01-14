@@ -23,38 +23,38 @@ import pathlib
 import sys
 
 # Implementation identity.
-_NAME = 'kaamiki'
-_CODENAME = 'miroslava'
+__NAME = 'kaamiki'
+__CODENAME = 'miroslava'
 
 # The implementation adheres to Semantic Versioning Specification
 # (SemVer) starting with version 0.0.1.
 # You can read about it here: https://semver.org/spec/v2.0.0.html
-_VERSION = '0.0.2'
+__VERSION = '0.0.2'
 
 # Implementation authors and project details.
-_AUTHOR = 'Kaamiki Development Team'
-_MAINTAINER = 'xames3'
-_AUTHOR_EMAIL = _MAINTAINER_EMAIL = 'xames3.kaamiki@gmail.com'
-_URL = 'https://github.com/kaamiki/kaamiki'
-_LICENSE = 'Apache Software License 2.0'
-_DESCRIPTION = (
+__AUTHOR = 'Kaamiki Development Team'
+__MAINTAINER = 'xames3'
+__AUTHOR_EMAIL = __MAINTAINER_EMAIL = 'xames3.kaamiki@gmail.com'
+__URL = 'https://github.com/kaamiki/kaamiki'
+__LICENSE = 'Apache Software License 2.0'
+__DESCRIPTION = (
     'Kaamiki is a simple cross-platform automation framework for data '
     'science and machine learning tasks.'
 )
 
 # Current operating system and session user.
-_OS = sys.platform  # darwin, linux and win32
-_SESSION = getpass.getuser()
+__OS = sys.platform
+__SESSION = getpass.getuser()
 
 # Encoding for all StringIO and FileIO operations.
 ENCODING = 'utf-8'
 
 # Separator for string substitution.
-SUB_STR_SEP = '_'
+SUBSTITUTE = '_'
 
 # File system separator.
-_PATH_SEP = pathlib.os.sep
+__SEP = pathlib.os.sep
 
 # Default canonical and sub directories for the implementation
-ROOT_DIR = pathlib.Path().home() / _NAME
-LOGS_DIR = ROOT_DIR / _SESSION / 'logs'
+ROOT_DIR = pathlib.Path().home() / __NAME
+LOGS_DIR = ROOT_DIR / __SESSION / 'logs'
