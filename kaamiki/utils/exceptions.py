@@ -58,15 +58,3 @@ class KaamikiError(Exception):
             f'information or even a sample code for reproducing this bug '
             f'while\nsubmitting an issue.\n'
         )
-
-
-class UnexpectedTypeError(KaamikiError):
-    """Exception class to inherit for type checking based errors."""
-
-
-class FileSystemError(KaamikiError):
-    """Exception class to inherit for all filesystem based errors."""
-
-
-class InvalidDirectoryName(FileSystemError):
-    """Exception to be raised when the path has invalid components."""
