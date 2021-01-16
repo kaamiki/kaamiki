@@ -49,22 +49,22 @@ if sys.version_info < (3, 6, 9):
     sys.exit('Kaamiki supports minimum python 3.6.9 and above. Kindly '
              'upgrade your python interpreter to a suitable version')
 
-if constants.__OS == 'win32' and sys.maxsize.bit_length() == 31:
+if constants._OS == 'win32' and sys.maxsize.bit_length() == 31:
     sys.exit('32-bit Python runtime is not supported.  Please switch to '
              '64-bit Python interpreter')
 
 skip_pkgs = []
 
 with open('requirements.txt', 'r') as requirements:
-    if constants.__OS == 'win32':
+    if constants._OS == 'win32':
         pkgs = requirements.readlines()
-    elif constants.__OS == 'linux' or constants.__OS == 'darwin':
+    elif constants._OS == 'linux' or constants._OS == 'darwin':
         pkgs = [pkg for pkg in requirements if pkg.rstrip() not in skip_pkgs]
     else:
         raise RuntimeError('Current platform is not supported by Kaamiki')
 
 setup(
-    name=constants.__NAME,
+    name=constants._NAME,
     version=constants.__VERSION,
     author=constants.__AUTHOR,
     author_email=constants.__AUTHOR_EMAIL,
