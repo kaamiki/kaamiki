@@ -23,7 +23,7 @@ import pathlib
 import sys
 
 # Implementation identity.
-__NAME = 'kaamiki'
+_NAME = 'kaamiki'
 __CODENAME = 'miroslava'
 
 # The implementation adheres to Semantic Versioning Specification
@@ -43,18 +43,16 @@ __DESCRIPTION = (
 )
 
 # Current operating system and session user.
-__OS = sys.platform
-__SESSION = getpass.getuser()
+_OS = sys.platform
+_SESSION = getpass.getuser()
+__MAX_SESSION_NAME_LEN = 32
 
 # Encoding for all StringIO and FileIO operations.
 ENCODING = 'utf-8'
 
-# Separator for string substitution.
-SUBSTITUTE = '_'
-
 # File system separator.
-__SEP = pathlib.os.sep
+_SEP = pathlib.os.sep
 
 # Default canonical and sub directories for the implementation
-ROOT_DIR = pathlib.Path().home() / __NAME
-LOGS_DIR = ROOT_DIR / __SESSION / 'logs'
+ROOT_DIR = pathlib.Path().home() / _NAME
+LOGS_DIR = ROOT_DIR / _SESSION / 'logs'

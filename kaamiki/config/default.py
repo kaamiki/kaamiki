@@ -18,14 +18,19 @@
 
 """Kaamiki's default configurations."""
 
+import re
 from typing import Any
 
 from kaamiki.config import constants
 
-__all__ = ['SettingsConfigurator']
+__all__ = ['DefaultSettingsConfigurator']
+
+_read_only_re = re.compile(r'^(\_[^_])')
+_attrs = [attr for attr in dir(constants) if attr.isupper()]
+_read_only_attrs = [attr[1:] for attr in _attrs if _read_only_re.match(attr)]
 
 
-class SettingsConfigurator(object):
+class DefaultSettingsConfigurator(object):
     """
     Base class for providing default configuration settings.
 
@@ -34,20 +39,18 @@ class SettingsConfigurator(object):
     settings.
     """
 
-    _attrs = [setting for setting in dir(constants) if setting.isupper()]
-    _read_only_attrs = [attr[2:] for attr in _attrs if attr.startswith('__')]
-
     @classmethod
     def __init_subclass__(cls) -> None:
         """Initialize subclass with default configuration settings."""
         # This pre-loading and initialization ensures that the default
         # settings are set before they are overridden by the user.
-        for setting in cls._attrs:
-            attr = setting[2:] if setting.startswith('__') else setting
-            setattr(cls, attr, getattr(constants, setting))
+        for _attr in _attrs:
+            if not _attr.startswith('__'):
+                attr = _attr[1:] if _read_only_re.match(_attr) else _attr
+                setattr(cls, attr, getattr(constants, _attr))
 
     def __setattr__(self, attr: str, value: Any) -> None:
         """Raise exception when overridding read-only attributes."""
-        if attr in self.__class__._read_only_attrs:
+        if attr in _read_only_attrs:
             raise ValueError(f'Cannot set {attr!r} attribute')
         return super().__setattr__(attr, value)
