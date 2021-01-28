@@ -56,7 +56,7 @@ _DEFAULT_LOG_PATH = BASE_DIR / SESSION_USER / _LOGS_DIR
 _DEFAULT_DATE_FMT = "%b %d, %Y %H:%M:%S"
 _DEFAULT_LOG_FMT = ("%(asctime)s.%(msecs)03d %(levelname)8s "
                     "%(process)07d [{:>15}] {:>30}:%(lineno)04d : %(message)s")
-_DEFAULT_EXC_FMT = "{0}: {1} {2}on line {3}."
+_DEFAULT_EXC_FMT = "{0}: {1} {2}on line {3}"
 
 # Character limit for displaying the module name which is logging the
 # record. This value is useful only in case the logger in use uses the
