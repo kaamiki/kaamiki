@@ -1,4 +1,4 @@
-# Copyright (c) 2020 Kaamiki Development Team. All rights reserved.
+# Copyright (c) 2021 Kaamiki Development Team. All rights reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -14,108 +14,81 @@
 # limitations under the License.
 #
 # Author(s):
-#     xames3 <44119552+xames3@users.noreply.github.com>
+#           xames3 <xames3.kaamiki@gmail.com>
 
 """
 Kaamiki
 
-Kaamiki is a simple machine learning framework for obvious tasks.
+A Python based implementation of kaamiki.
+
+Kaamiki is a simple cross-platform automation framework for data
+science and machine learning tasks. It is an operating system agnostic
+Artificial Intelligence development package which provides high-level
+and flexible python abstractions for running simple machine learning
+applications.
+Kaamiki also offers python based nifty tools such as logger, file I/O
+related functions, etc. which provides an extension to the developers
+existing work.
 """
-# TODO(xames3): Add a descriptive docstring which would help the users
-# and developers alike to get an idea what and how kaamiki could assist
-# them right out of the box with minimal efforts.
 
-import os
 import sys
-
-# Raise exceptions if the host system is not properly configured
-# for installing kaamiki. See https://github.com/kaamiki/kaamiki
-# for more help.
-if sys.version_info < (3, ):
-  sys.exit("Python 2 has officially reached end-of-life and is no longer "
-           "supported by Kaamiki.")
-
-if sys.version_info < (3, 6, 9):
-  sys.exit("Kaamiki supports minimum python 3.6.9 and above. Kindly upgrade "
-           "your python interpreter to a suitable version.")
-
-if os.name == "nt" and sys.maxsize.bit_length() == 31:
-  sys.exit("32-bit Python runtime is not supported. Please switch to 64-bit "
-           "Python.")
 
 from setuptools import find_packages, setup
 
-from kaamiki import BASE_DIR, __author__, __name__, __version__
+from kaamiki.config import constants
 
-# Flag which raises warning if the installed version of kaamiki is
-# either outdated or a nightly (development) build.
-STATUS = 0
+# Raise early exceptions if the host system is not properly configured
+# for installing the framework.
+# See https://github.com/kaamiki/kaamiki for more help.
+if sys.version_info < (3, ):
+    sys.exit('Python 2 has officially reached end-of-life and is no longer '
+             'supported by Kaamiki. Please upgrade your python interpreter '
+             'to minimum Python 3.6.9 or above')
 
-DESCRIPTION = __doc__.splitlines()[3]
+if sys.version_info < (3, 6, 9):
+    sys.exit('Kaamiki supports minimum python 3.6.9 and above. Kindly '
+             'upgrade your python interpreter to a suitable version')
 
+if constants._OS == 'win32' and sys.maxsize.bit_length() == 31:
+    sys.exit('32-bit Python runtime is not supported.  Please switch to '
+             '64-bit Python interpreter')
 
-def parse_readme() -> str:
-  """Parse README.md for long description of kaamiki."""
-  with open("README.md", "r") as file:
-    return file.read()
+skip_pkgs = []
 
-
-with open("requirements.txt", "r") as requirements:
-  if os.name == "nt":
-    packages = [idx for idx in requirements]
-  else:
-    skip = ["pywin32", "pypywin32", "pywinauto"]
-    packages = [idx for idx in requirements if idx.rstrip() not in skip]
+with open('requirements.txt', 'r') as requirements:
+    if constants._OS == 'win32':
+        pkgs = requirements.readlines()
+    elif constants._OS == 'linux' or constants._OS == 'darwin':
+        pkgs = [pkg for pkg in requirements if pkg.rstrip() not in skip_pkgs]
+    else:
+        raise RuntimeError('Current platform is not supported by Kaamiki')
 
 setup(
-    name=__name__,
-    version=__version__,
-    author=__author__,
-    author_email="xames3.kaamiki@gmail.com",
-    maintainer_email="xames3.kaamiki@gmail.com",
-    url="https://github.com/kaamiki/kaamiki",
-    license="Apache Software License 2.0",
-    description=DESCRIPTION,
-    long_description=parse_readme(),
-    long_description_content_type="text/markdown",
-    keywords="kaamiki python",
-    zip_safe=False,
-    install_requires=packages,
-    python_requires=">=3.6.9",
-    include_package_data=True,
+    name=constants._NAME,
+    version=constants.__VERSION,
+    author=constants.__AUTHOR,
+    author_email=constants.__AUTHOR_EMAIL,
+    maintainer=constants.__MAINTAINER,
+    maintainer_email=constants.__MAINTAINER_EMAIL,
+    url=constants.__URL,
+    license=constants.__LICENSE,
+    description=constants.__DESCRIPTION,
+    long_description=open('README.md', encoding=constants.ENCODING).read(),
+    long_description_content_type='text/markdown',
+    install_requires=pkgs,
     packages=find_packages(),
-    entry_points={
-        "console_scripts": [
-            "kaamiki = kaamiki.parser:main",
-        ],
-    },
     # You can find the complete list here:
     # https://pypi.python.org/pypi?%3Aaction=list_classifiers
     classifiers=[
-        "Development Status :: 1 - Planning",
-        "Intended Audience :: Developers",
-        "Intended Audience :: End Users/Desktop",
-        "Intended Audience :: Science/Research",
-        "License :: OSI Approved :: Apache Software License",
-        "Operating System :: OS Independent",
-        "Programming Language :: Python",
-        "Programming Language :: Python :: 3 :: Only",
-        "Programming Language :: Python :: 3.6",
-        "Programming Language :: Python :: 3.7",
-        "Programming Language :: Python :: 3.8",
-        "Topic :: Home Automation",
-        "Topic :: Security",
-        "Topic :: Security :: Cryptography",
-        "Topic :: Scientific/Engineering :: Artificial Intelligence",
+        'Development Status :: 3 - Alpha',
+        'License :: OSI Approved :: Apache Software License',
+        'Operating System :: OS Independent',
+        'Programming Language :: Python',
+        'Programming Language :: Python :: 3 :: Only',
+        'Programming Language :: Python :: 3.6',
+        'Programming Language :: Python :: 3.7',
+        'Programming Language :: Python :: 3.8',
+        'Topic :: Scientific/Engineering :: Artificial Intelligence',
     ],
 )
 
-# Create base directory for caching, logging and storing data for/of
-# a kaamiki session.
-if not BASE_DIR.exists():
-  os.mkdir(BASE_DIR)
-with open(BASE_DIR / "update", "w") as update:
-  # TODO(xames3): Check if the status is really necessary with the team.
-  update.write(f"name: {__name__}\n"
-               f"version: {__version__}\n"
-               f"status: {STATUS}")
